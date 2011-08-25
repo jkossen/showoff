@@ -41,6 +41,14 @@ IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 Showoff features and lack thereof
 ----------------------------------
 
+* Image rotation based on exif data
+
+* Image albums are just directories with image files, showoff will find and
+  generate the required metadata for you.
+
+* You can use the admin to select which photo's should be selected for the
+  "show" which is the publicly visible album
+
 * Separate viewer (frontend / public) and admin apps
 
 * Does not change original files
