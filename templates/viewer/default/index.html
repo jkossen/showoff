@@ -1,0 +1,14 @@
+{% extends "viewer/default/layout.html" %}
+
+{% block body %}
+<h1><a href="{{ url_for('show_index') }}">{{ config.TITLE }}</a></h1>
+
+<h2>Available photo albums:</h2>
+
+<ul>
+{% for album in albums %}
+<li><a href="{{ url_for('show_album', album=album) }}">{{ album }}</a> ({{ shows[album].nr_of_items() }} photos)</li>
+{% endfor %}
+</ul>
+
+{% endblock %}

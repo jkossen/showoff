@@ -1,0 +1,30 @@
+{% extends "viewer/default/layout.html" %}
+
+{% block title %}{{ config.TITLE }} - {{ filename }}{% endblock %}
+
+{% block body %}
+<h1><a href="{{ url_for('show_album', album=album) }}">{{ album }}</a></h1>
+<h2>{{ filename }}</h2>
+{% for message in get_flashed_messages() %}
+<div class="flash">{{ message }}</div>
+{% endfor %}
+
+<p>Download image in sizes:
+{% for size in config.ALLOWED_SIZES %}
+{% if size != 'full' %}
+<a href="{{ url_for('show_image', album=album, size=size, filename=filename) }}">{{ size }}</a>
+{% else %}
+<a href="{{ url_for('show_image_full', album=album, filename=filename) }}">{{ size }}</a>
+{% endif %}
+{% if not loop.last %}
+|
+{% endif %}
+{% endfor %}
+</p>
+
+<img src="{{ url_for('show_image', album=album, filename=filename, size=config.IMAGE_SIZE) }}" alt="{{ filename }}" />
+
+<h3>Exif information</h3>
+{{ exif|exif_table|safe}}
+
+{% endblock %}
