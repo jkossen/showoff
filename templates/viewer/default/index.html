@@ -5,10 +5,15 @@
 
 <h2>Available photo albums:</h2>
 
-<ul>
+<table style="width: 800px;">
+    <tr><th>Preview</th><th>Album title</th><th>Nr of photos</th></tr>
 {% for album in albums %}
-<li><a href="{{ url_for('show_album', album=album) }}">{{ album }}</a> ({{ shows[album].nr_of_items() }} photos)</li>
+<tr>
+    <td><a href="{{ url_for('show_album', album=album) }}"><img src="{{ url_for('show_image', album=album, size=75, filename=shows[album].data['files'][0]) }}" /></a></td>
+    <td><a href="{{ url_for('show_album', album=album) }}">{{ album }}</a></td>
+    <td>{{ shows[album].nr_of_items() }}</td>
+</tr>
 {% endfor %}
-</ul>
+</table>
 
 {% endblock %}
