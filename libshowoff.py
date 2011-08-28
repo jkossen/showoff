@@ -208,7 +208,7 @@ def get_exif(app, album, filename):
 
     if os.path.exists(exiffile):
         f = open(exiffile)
-        while (line = f.readline()):
+        for line in f.readline():
             exif[line.split('|')[0]] = line.split('|')[1]
         f.close()
 
