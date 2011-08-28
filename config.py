@@ -34,6 +34,7 @@ VIEWER_ROUTES = {
     'list': '<album>/list/<int:page>.html',
     'list_small': '<album>/list_small/<int:page>.html',
     'album': '<album>.html',
+    'show_galleria': '<album>/galleria/<int:page>.html',
     'show_slideshow': '<album>/slideshow/<int:page>.html',
     'index': '',
     }
@@ -50,6 +51,7 @@ ADMIN_ROUTES = {
     'rotate_url': '<album>/rotate_exif/',
     'exif_rotate_image': '<album>/rotate_exif/<filename>/',
     'rotate_image': '<album>/rotate/<int:steps>/<filename>/',
+    'show_galleria': '<album>/galleria/<int:page>/',
     'add_image_to_show': '<album>/add_image_to_show/<filename>/',
     'remove_image_from_show': '<album>/remove_image_from_show/<filename>/',
     'add_all_images_to_show': '<album>/add_all/',
