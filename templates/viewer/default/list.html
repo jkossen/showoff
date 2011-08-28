@@ -67,7 +67,14 @@
                             <a href="{{ url_for('image_page', album=album, filename=filename) }}">Image information page</a>
                         </div>
                         <div class="download">
-                            <a href="{{ url_for('show_image', album=album, filename=filename, size=1600) }}">Download 1600 pixel version</a>
+                            Sizes available:
+                            <ul>
+                            {% for size in config.ALLOWED_SIZES %}
+                            {% if size != 'full' %}
+                            <li><a href="{{ url_for('show_image', album=album, filename=filename, size=size) }}">{{ size }}px</a></li>
+                            {% endif %}
+                            {% endfor %}
+                        </ul>
                         </div>
                         <div class="download">
                             <a href="{{ url_for('show_image_full', album=album, filename=filename) }}">Download original full-size version</a>
