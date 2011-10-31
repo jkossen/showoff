@@ -1,14 +1,27 @@
-{% extends "admin/default/layout.html" %}
+{% extends "viewer/default/layout.html" %}
 
+{% block extrahead %}
+<link rel="stylesheet" href="{{ url_for('static_files', filename='galleriffic/css/basic.css') }}" type="text/css" />
+<link rel="stylesheet" href="{{ url_for('static_files', filename='galleriffic/css/galleriffic-5.css') }}" type="text/css" />
+<link rel="stylesheet" href="{{ url_for('static_files', filename='galleriffic/css/black.css') }}" type="text/css" />
+{% endblock %}
 {% block body %}
+<div class="page">
+<div id="page">
+<div id="container">
 <h1><a href="{{ url_for('show_index') }}">{{ config.TITLE }}</a></h1>
 
 <h2>Available photo albums:</h2>
 
-<ul>
+<table style="width: 800px;">
+    <tr><th>Album title</th></tr>
 {% for album in albums %}
-<li><a href="{{ url_for('show_album', album=album) }}">{{ album }}</a></li>
+<tr>
+    <td><a href="{{ url_for('show_album', album=album) }}">{{ album }}</a></td>
+</tr>
 {% endfor %}
-</ul>
-
+</table>
+</div>
+</div>
+</div>
 {% endblock %}
