@@ -258,12 +258,14 @@ class Show(object):
     def add_image(self, filename):
         if filename not in self.data['files']:
             self.data['files'].append(filename)
-            self.save()
+            return self.save()
+        return True
 
     def remove_image(self, filename):
         if filename in self.data['files']:
             self.data['files'].remove(filename)
-            self.save()
+            return self.save()
+        return True
 
     def load(self):
         if os.path.exists(self.show_file):
@@ -276,15 +278,19 @@ class Show(object):
             datetime = get_exif_datetime(self.app, self.album, filename)
             filenames.append((datetime, filename))
         self.data['files'] = [v for (k, v) in sorted(filenames)]
-        self.save()
+        return self.save()
 
     def save(self):
-        if not os.path.exists(self.show_dir):
-            os.mkdir(self.show_dir)
-        fp = open(self.show_file, 'w')
-        js = json.dumps(self.data)
-        fp.write(js)
-        fp.close()
+        try:
+            if not os.path.exists(self.show_dir):
+                os.mkdir(self.show_dir)
+            fp = open(self.show_file, 'w')
+            js = json.dumps(self.data)
+            fp.write(js)
+            fp.close()
+            return True
+        except:
+            return False
 # }}}
 
 # Paginator class {{{

@@ -11,10 +11,12 @@ ADMIN_BASEURL = 'http://showoff'
 ADMIN_PREFIX = 'showoff_admin/'
 ADMIN_FCGI_SOCKET = '/var/lib/showoff/admin.sock'
 THUMBNAIL_SIZE = 75
+GRID_SIZE = 200
 ADMIN_THUMBNAIL_SIZE = 400
 THUMBNAILS_PER_PAGE = 12
 THUMBNAILS_PER_SMALL_LIST = 8
 ADMIN_THUMBNAILS_PER_PAGE = 12
+ADMIN_GRID_ITEMS_PER_PAGE = 50
 IMAGE_SIZE = 800
 ALLOWED_SIZES = [ 75, 200, 400, 500, 640, 800, 1024, 1600, 'full' ]
 THEME = 'default'
@@ -32,6 +34,7 @@ VIEWER_ROUTES = {
     'show_image_full': '<album>/image/full/<filename>',
     'image_page': '<album>/show/<filename>.html',
     'list': '<album>/list/<int:page>.html',
+    'grid': '<album>/grid/',
     'list_small': '<album>/list_small/<int:page>.html',
     'album': '<album>.html',
     'show_galleria': '<album>/galleria/<int:page>.html',
@@ -45,6 +48,7 @@ ADMIN_ROUTES = {
     'show_image': '<album>/image/<filename>/<int:size>/',
     'show_image_full': '<album>/image/<filename>/full/',
     'image_page': '<album>/show/<filename>/',
+    'grid': '<album>/grid/<int:page>/',
     'list': '<album>/list/<int:page>/',
     'list_show': '<album>/list_show/<int:page>/',
     'show_album': '<album>/',

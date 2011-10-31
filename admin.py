@@ -147,9 +147,6 @@ def list(album, page):
     files = os.listdir(os.path.join(app.config['ALBUMS_DIR'], album))
     show = Show(app, album)
 
-    #if len(show.data['files']) == 0:
-    #    abort(404)
-
     # only list .jpg files
     ext = re.compile(".jpg$", re.IGNORECASE)
     files = filter(ext.search, files)
@@ -175,7 +172,7 @@ def list_show(album, page):
 @app.route(get_route('show_album'))
 def show_album(album):
     """Render first page of album"""
-    return list(album, 1)
+    return grid(album)
 # }}}
 
 # show_index {{{
@@ -184,7 +181,7 @@ def show_index():
     """Render frontpage"""
     dir_list = os.listdir(app.config['ALBUMS_DIR'])
     album_list = [ os.path.basename(album) for album in dir_list ]
-    album_list.sort()
+    album_list.sort(reverse=True)
     return render_template(themed('index.html'), albums=album_list)
 # }}}
 
@@ -235,8 +232,9 @@ def exif_rotate_image(album, filename):
 def add_image_to_show(album, filename):
     """Add an image to the show"""
     show = Show(app, album)
-    show.add_image(filename)
-    return url_for(remove_image_from_show, album=album, filename=filename)
+    if show.add_image(filename):
+        return jsonify(result='OK')
+    return jsonify(result='Failed')
 # }}}
 
 # remove_image_from_show {{{
@@ -244,8 +242,9 @@ def add_image_to_show(album, filename):
 def remove_image_from_show(album, filename):
     """Remove an image from the show"""
     show = Show(app, album)
-    show.remove_image(filename)
-    return url_for(add_image_to_show, album=album, filename=filename)
+    if show.remove_image(filename):
+        return jsonify(result='OK')
+    return jsonify(result='Failed')
 # }}}
 
 # sort_show_by_exifdate {{{
@@ -256,6 +255,18 @@ def sort_show_by_exifdate(album):
     show.sort_by_exif_datetime()
     return redirect(request.referrer or url_for('index'))
 # }}}
+
+@app.route(get_route('grid'))
+def grid(album, page=1):
+    files = os.listdir(os.path.join(app.config['ALBUMS_DIR'], album))
+    show = Show(app, album)
+    ext = re.compile(".jpg$", re.IGNORECASE)
+    files = filter(ext.search, files)
+
+    files.sort()
+    p = Paginator(album, files, app.config['ADMIN_GRID_ITEMS_PER_PAGE'], page, 'grid')
+    return render_template(themed('grid.html'), album=album, files=p.entries,
+                           paginator=p, show=show)
 
 # add_all_images_to_show {{{
 @app.route(get_route('add_all_images_to_show'))
