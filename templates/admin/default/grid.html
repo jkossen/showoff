@@ -6,11 +6,13 @@
 <link rel="stylesheet" href="{{ url_for('static_files', filename='galleriffic/css/basic.css') }}" type="text/css" />
 <link rel="stylesheet" href="{{ url_for('static_files', filename='galleriffic/css/galleriffic-5.css') }}" type="text/css" />
 <link rel="stylesheet" href="{{ url_for('static_files', filename='galleriffic/css/black.css') }}" type="text/css" />
+<link rel="stylesheet" href="{{ url_for('static_files', filename='css/jquery.lightbox-0.5.css') }}" type="text/css" />
 <script type="text/javascript" src="{{ url_for('static_files', filename='galleriffic/js/jquery-1.3.2.js') }}"></script>
 <script type="text/javascript" src="{{ url_for('static_files', filename='jquery.blockUI.js') }}"></script>
-<script type="text/javascript" src="{{ url_for('static_files', filename='galleriffic/js/jquery.history.js') }}"></script>
+<!--script type="text/javascript" src="{{ url_for('static_files', filename='galleriffic/js/jquery.history.js') }}"></script>
 <script type="text/javascript" src="{{ url_for('static_files', filename='galleriffic/js/jquery.galleriffic.js') }}"></script>
-<script type="text/javascript" src="{{ url_for('static_files', filename='galleriffic/js/jquery.opacityrollover.js') }}"></script>
+<script type="text/javascript" src="{{ url_for('static_files', filename='galleriffic/js/jquery.opacityrollover.js') }}"></script-->
+<script type="text/javascript" src="{{ url_for('static_files', filename='js/jquery.lightbox-0.5.js') }}"></script>
 
 <!-- We only want the thunbnails to display when javascript is disabled -->
 <script type="text/javascript">
@@ -102,12 +104,13 @@
 
         {% for filename in files %}
         <div style="float:left;">
-            <a class="thumb" style="float:left;width:{{config.GRID_SIZE}}px;height:{{config.GRID_SIZE}}px;padding:10px;" name="{{ filename }}" href="{{ url_for('show_image', album=album, filename=filename, size=800) }}" title="{{ filename }}">
+            <a class="lightbox" style="float:left;width:{{config.GRID_SIZE}}px;height:{{config.GRID_SIZE}}px;padding:10px;" name="{{ filename }}"
+                href="{{ url_for('show_image', album=album, filename=filename, size=800) }}" title="{{ filename }}">
                 <img src="{{ url_for('show_image', album=album, filename=filename, size=config.GRID_SIZE) }}" alt="{{ filename }}" />
             </a>
             <div id="select_for_show">show: <span id="toggle_show_{{ loop.index }}">
             {% if filename in show.data['files'] %}
-            <a href="#"
+            <a  href="#"
                 onclick='return toggle_show("#toggle_show_{{ loop.index }}",
                 "{{ url_for('remove_image_from_show', album=album, filename=filename) }}", "{{ url_for('add_image_to_show', album=album, filename=filename) }}", false);'>
                 <img src="{{ url_for('static_files', filename='on.png') }}">
@@ -130,6 +133,25 @@
 <div id="footer">&copy; 2010 Jochem Kossen</div>
 
 <script>
+$(function() {
+    $('a.lightbox').lightBox({
+    imageLoading: '{{ url_for('static_files', filename='images/lightbox-ico-loading.gif') }}',
+    imageBtnPrev: '{{ url_for('static_files', filename='images/lightbox-btn-prev.gif') }}',
+    imageBtnNext: '{{ url_for('static_files', filename='images/lightbox-btn-next.gif') }}',
+    imageBtnClose: '{{ url_for('static_files', filename='images/lightbox-btn-close.gif') }}',
+    imageBlank: '{{ url_for('static_files', filename='images/lightbox-blank.gif') }}',
+    fixedNavigation: true,
+    }); // Select all links with lightbox class
+    // Use this example, or...
+    //$('a[@rel*=lightbox]').lightBox(); // Select all links that contains lightbox in the attribute rel
+    // This, or...
+    //$('#gallery a').lightBox(); // Select all links in object with gallery ID
+    // This, or...
+    // This, or...
+    //$('a').lightBox(); // Select all links in the page
+    // ... The possibility are many. Use your creative or choose one in the examples above
+});
+
 var images = [ {% for filename in all_files %}'{{ filename }}'{% if not loop.last %}, {% endif %}{% endfor %} ];
 _rotate_all_images = function(index) {
     percentage_complete = Math.round((index * 100) / images.length);
@@ -163,5 +185,6 @@ rotate = function(url) {
         }
         });
 }
+
 </script>
 {% endblock %}
