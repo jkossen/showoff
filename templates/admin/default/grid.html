@@ -123,8 +123,45 @@
         </div>
         </div>
         {% endfor %}
-        <a href="{{ url_for('show_index') }}">Other albums</a>
+        <a href="{{ url_for('show_index') }}">Other albums</a><br>
+        <a href="#" onclick='rotate_all_images(0);return false;'>Rotate all images based on exif info</a>
     </div>
 </div>
 <div id="footer">&copy; 2010 Jochem Kossen</div>
+
+<script>
+var images = [ {% for filename in all_files %}'{{ filename }}'{% if not loop.last %}, {% endif %}{% endfor %} ];
+_rotate_all_images = function(index) {
+    percentage_complete = Math.round((index * 100) / images.length);
+    $('#progress').html(percentage_complete + ' % done (' + images[index] + ')');
+    $.ajax({
+        url: '{{ url_for('rotate_url', album=album) }}' + images[index] + '/',
+        context: document.body,
+        success: function() {
+            if (index < images.length-1) {
+                _rotate_all_images(index+1);
+            } else {
+                window.location.reload();
+            }
+        }
+        });
+}
+rotate_all_images = function(index) {
+    if (confirm('This will rotate all images in the album according to EXIF specs. Are you sure?')) {
+        $.blockUI({ message: '<h1><img src="{{ url_for('static_files', filename='galleriffic/css/loader.gif') }}" style="vertical-align:middle;" /> Rotating all images ...</h1><h2><span id="progress">0 percent complete</span></h2>'});
+        _rotate_all_images(index);
+    }
+}
+
+rotate = function(url) {
+    $.blockUI({ message: '<h1><img src="{{ url_for('static_files', filename='galleriffic/css/loader.gif') }}" style="vertical-align:middle;" /> Rotating image ...</h1>'});
+    $.ajax({
+        url: url,
+        context: document.body,
+        success: function() {
+            window.location.reload();
+        }
+        });
+}
+</script>
 {% endblock %}

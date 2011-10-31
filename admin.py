@@ -266,7 +266,7 @@ def grid(album, page=1):
     files.sort()
     p = Paginator(album, files, app.config['ADMIN_GRID_ITEMS_PER_PAGE'], page, 'grid')
     return render_template(themed('grid.html'), album=album, files=p.entries,
-                           paginator=p, show=show)
+                           paginator=p, show=show, all_files=files)
 
 # add_all_images_to_show {{{
 @app.route(get_route('add_all_images_to_show'))
