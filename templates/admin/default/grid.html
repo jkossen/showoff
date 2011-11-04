@@ -1,4 +1,4 @@
-{% extends "viewer/default/layout.html" %}
+{% extends "admin/default/layout.html" %}
 
 {% block title %}{{ album }} - grid view{% endblock %}
 
@@ -80,27 +80,7 @@
         <div class="flash">{{ message }}</div>
         {% endfor %}
 
-        <div class="paginator">
-            Set: <a href="{{ paginator.first }}">&laquo; first</a>
-            {%- if paginator.has_previous %}
-            <a href="{{ paginator.previous }}">&lsaquo; prev</a>
-            {%- else %}
-            <span class="inactive"> &lsaquo; prev</span>{% endif %}
-            | {{ paginator.page }} /
-            {% if paginator.has_next %}
-            <a href="{{ paginator.last }}">{{ paginator.pages }}</a> |
-            {% else %}
-            {{ paginator.pages }} |
-            {% endif %}
-            {% if paginator.has_next %}
-            <a href="{{ paginator.next }}">next &rsaquo;</a>
-            <a href="{{ paginator.last }}">last &raquo;</a>
-            {%- else %}
-            <span class="inactive">next &rsaquo;</span>
-            <span class="inactive">last &raquo;</span>
-            {% endif %}
-            <div id="photonav"></div>
-        </div>
+        {% include "admin/default/_paginator.html" %}
 
         {% for filename in files %}
         <div style="float:left;">
@@ -128,6 +108,8 @@
         {% endfor %}
         <a href="{{ url_for('show_index') }}">Other albums</a><br>
         <a href="#" onclick='rotate_all_images(0);return false;'>Rotate all images based on exif info</a>
+        <div style="clear:both;padding-top:5px;padding-bottom:5px;"></div>
+{% include "admin/default/_paginator.html" %}
     </div>
 </div>
 <div id="footer">&copy; 2010 Jochem Kossen</div>
