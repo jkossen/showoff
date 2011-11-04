@@ -1,6 +1,9 @@
 {% extends "viewer/default/layout.html" %}
 
 {% block extrahead %}
+<link rel="stylesheet" href="{{ url_for('static_files', filename='galleriffic/css/basic.css') }}" type="text/css" />
+<link rel="stylesheet" href="{{ url_for('static_files', filename='galleriffic/css/galleriffic-5.css') }}" type="text/css" />
+<link rel="stylesheet" href="{{ url_for('static_files', filename='galleriffic/css/black.css') }}" type="text/css" />
 <link rel="stylesheet" type="text/css" href="{{ url_for('static_files', filename='slideshow/css/slideshow.css') }}" media="screen" />
 <script src="{{ url_for('static_files', filename='slideshow/js/mootools.js') }}"></script>
 <script src="{{ url_for('static_files', filename='slideshow/js/slideshow.js') }}"></script>
@@ -28,12 +31,14 @@
 {% block title %}{{ album }} page {{ paginator.page }} of {{ paginator.pages }}{% endblock %}
 
 {% block body %}
-{% for message in get_flashed_messages() %}
+<div id="page">
+    <div id="container">
+        <h1><a href="{{ url_for('show_album', album=album) }}">{{ album }}</a></h1>
+ {% for message in get_flashed_messages() %}
 <div class="flash">{{ message }}</div>
 {% endfor %}
 
 <p>
-<a href="{{ url_for('list', album=album, page=page) }}">icons</a>
 </p>
 
 <div class="paginator">
@@ -46,10 +51,12 @@
     <a href="{{ paginator.next }}">&rsaquo;</a>
     {%- else %}<span class="inactive">&raquo;</span>{% endif %}
     <a href="{{ paginator.last }}">&raquo;</a>
+    <span style="float:right;"><a href="{{ url_for('list', album=album, page=page) }}">regular view</a></span>
 </div>
 
 <div id="show" class="slideshow">
-    <img src="{{ url_for('show_image', album=album, filename=files[0], size=800) }}" width="800" height="600" alt="Slideshow 2! Example 1: Basic fading show" />
+    <img src="{{ url_for('show_image', album=album, filename=files[0], size=800) }}" width="800" height="600" />
 </div>
-
+</div>
+</div>
 {% endblock %}

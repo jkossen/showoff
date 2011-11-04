@@ -1,6 +1,14 @@
 {% extends "viewer/default/layout.html" %}
 
+{% block extrahead %}
+<link rel="stylesheet" href="{{ url_for('static_files', filename='galleriffic/css/basic.css') }}" type="text/css" />
+<link rel="stylesheet" href="{{ url_for('static_files', filename='galleriffic/css/galleriffic-5.css') }}" type="text/css" />
+<link rel="stylesheet" href="{{ url_for('static_files', filename='galleriffic/css/black.css') }}" type="text/css" />
+{% endblock %}
 {% block body %}
+<div class="page">
+<div id="page">
+<div id="container">
 <h1><a href="{{ url_for('show_index') }}">{{ config.TITLE }}</a></h1>
 
 <h2>Available photo albums:</h2>
@@ -15,5 +23,7 @@
 </tr>
 {% endfor %}
 </table>
-
+</div>
+</div>
+</div>
 {% endblock %}

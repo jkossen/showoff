@@ -107,6 +107,7 @@
         </div>
         {% endfor %}
         <a href="{{ url_for('show_index') }}">Other albums</a><br>
+        <a href="{{ url_for('show_edit_users', album=album) }}">Edit user access</a><br>
         <a href="#" onclick='rotate_all_images(0);return false;'>Rotate all images based on exif info</a>
         <div style="clear:both;padding-top:5px;padding-bottom:5px;"></div>
 {% include "admin/default/_paginator.html" %}
@@ -117,21 +118,13 @@
 <script>
 $(function() {
     $('a.lightbox').lightBox({
-    imageLoading: '{{ url_for('static_files', filename='images/lightbox-ico-loading.gif') }}',
-    imageBtnPrev: '{{ url_for('static_files', filename='images/lightbox-btn-prev.gif') }}',
-    imageBtnNext: '{{ url_for('static_files', filename='images/lightbox-btn-next.gif') }}',
-    imageBtnClose: '{{ url_for('static_files', filename='images/lightbox-btn-close.gif') }}',
-    imageBlank: '{{ url_for('static_files', filename='images/lightbox-blank.gif') }}',
-    fixedNavigation: true,
-    }); // Select all links with lightbox class
-    // Use this example, or...
-    //$('a[@rel*=lightbox]').lightBox(); // Select all links that contains lightbox in the attribute rel
-    // This, or...
-    //$('#gallery a').lightBox(); // Select all links in object with gallery ID
-    // This, or...
-    // This, or...
-    //$('a').lightBox(); // Select all links in the page
-    // ... The possibility are many. Use your creative or choose one in the examples above
+        imageLoading: '{{ url_for('static_files', filename='images/lightbox-ico-loading.gif') }}',
+        imageBtnPrev: '{{ url_for('static_files', filename='images/lightbox-btn-prev.gif') }}',
+        imageBtnNext: '{{ url_for('static_files', filename='images/lightbox-btn-next.gif') }}',
+        imageBtnClose: '{{ url_for('static_files', filename='images/lightbox-btn-close.gif') }}',
+        imageBlank: '{{ url_for('static_files', filename='images/lightbox-blank.gif') }}',
+        fixedNavigation: true,
+    });
 });
 
 var images = [ {% for filename in all_files %}'{{ filename }}'{% if not loop.last %}, {% endif %}{% endfor %} ];

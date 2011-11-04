@@ -33,6 +33,7 @@ VIEWER_ROUTES = {
     'show_image': '<album>/image/<int:size>/<filename>',
     'show_image_full': '<album>/image/full/<filename>',
     'image_page': '<album>/show/<filename>.html',
+    'login': '<album>/login/',
     'list': '<album>/list/<int:page>.html',
     'grid': '<album>/grid/',
     'list_small': '<album>/list_small/<int:page>.html',
@@ -60,5 +61,9 @@ ADMIN_ROUTES = {
     'remove_image_from_show': '<album>/remove_image_from_show/<filename>/',
     'add_all_images_to_show': '<album>/add_all/',
     'sort_show_by_exifdate': '<album>/sort_by_exifdate/',
+    'show_change_setting': '<album>/set/<setting>/<value>/',
+    'show_change_password': '<album>/change_password/',
+    'show_remove_user': '<album>/remove_user/<username>/',
+    'show_edit_users': '<album>/edit_users/',
     'index': '',
     }

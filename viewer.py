@@ -37,8 +37,10 @@ viewing content, not manipulation.
 # }}}
 
 # IMPORTS {{{
-from flask import Flask, render_template, send_from_directory, abort, url_for, redirect, json
+from flask import Flask, render_template, send_from_directory, abort, url_for, redirect, json, session, request, Response, flash
+from functools import wraps
 from libshowoff import Show, Paginator, supported_exiftags, update_cache, update_exif, get_edit_or_original
+from forms import LoginForm
 import os, re, Image
 # }}}
 
@@ -59,11 +61,31 @@ def view(rule, **options):
         return f
     return decorator
 
+def login_required(fun):
+    """Decorator for functions which require an authorized user"""
+    @wraps(fun)
+    def decorated_function(album, *args, **kwargs):
+        """Decorated function"""
+        if need_authentication(album):
+            return login(album)
+        return fun(album, *args, **kwargs)
+
+    return decorated_function
+
 def render_themed(template, **options):
     """ Render template from a configured subdir to implement themes """
     template_path = os.path.join('viewer', app.config['THEME'], template)
     return render_template(template_path, **options)
 
+def need_authentication(album):
+    show = Show(app, album)
+    if (show.get_setting('require_authentication')):
+        if session.get('username') and (session.get('album') == album):
+            return False
+        else:
+            return True
+
+    return False
 # }}}
 
 # TEMPLATE TAGS {{{
@@ -77,6 +99,23 @@ def get_exif_table(exif):
 # }}}
 
 # VIEWER VIEWS {{{
+@view('login', methods=['GET','POST'])
+def login(album):
+    """Check user credentials and initialize session"""
+    form = LoginForm()
+    show = Show(app, album)
+
+    if request.method == 'POST':
+        form = LoginForm(request.form)
+        if form.validate():
+            if show.check_auth(request.form['username'], app.config['SECRET_KEY'], request.form['password']):
+                session.clear()
+                session['username'] = request.form['username']
+                session['album'] = album
+                return list(album, 1)
+
+    return render_themed('login.html', album=album, form=form)
+
 @view('static_files')
 def static_files(filename):
     """Send static files such as style sheets, JavaScript, etc."""
@@ -85,6 +124,7 @@ def static_files(filename):
     return send_from_directory(static_path, filename)
 
 @view('show_image')
+@login_required
 def show_image(album, filename, size=None):
     """Send static files such as style sheets, JavaScript, etc."""
     if size is not None:
@@ -105,10 +145,12 @@ def show_image(album, filename, size=None):
         return send_from_directory(get_edit_or_original(app, album, filename), filename)
 
 @view('show_image_full')
+@login_required
 def show_image_full(album, filename):
     return show_image(album, filename)
 
 @view('image_page')
+@login_required
 def image_page(album, filename):
     exifdir = os.path.join(app.config['CACHE_DIR'], album, 'exif')
     f = open(os.path.join(exifdir, filename + '.exif'))
@@ -118,15 +160,26 @@ def image_page(album, filename):
     return render_themed('image.html', album=album, filename=filename, exif=exif_array)
 
 @view('list')
+@login_required
 def list(album, page):
     show = Show(app, album)
+
     if len(show.data['files']) == 0:
         abort(404)
     files = show.data['files']
     p = Paginator(album, files, app.config['THUMBNAILS_PER_PAGE'], page, 'list')
     return render_themed('list.html', album=album, files=p.entries, paginator=p, page=page)
 
+@view('grid')
+@login_required
+def grid(album):
+    show = Show(app, album)
+    if len(show.data['files']) == 0:
+        abort(404)
+    return render_themed('grid.html', album=album, show=show)
+
 @view('list_small')
+@login_required
 def list_small(album, page):
     show = Show(app, album)
     if len(show.data['files']) == 0:
@@ -136,11 +189,13 @@ def list_small(album, page):
     return render_themed('list_small.html', album=album, files=p.entries, paginator=p, page=page)
 
 @view('album')
+@login_required
 def show_album(album):
     """Render first page of album"""
     return list(album, 1)
 
 @view('show_galleria')
+@login_required
 def show_galleria(album, page):
     """"""
     show = Show(app, album)
@@ -152,6 +207,7 @@ def show_galleria(album, page):
     return render_themed('galleria.html', album=album, files=p.entries, paginator=p)
 
 @view('show_slideshow')
+@login_required
 def show_slideshow(album, page):
     """"""
     show = Show(app, album)
@@ -169,6 +225,7 @@ def show_slideshow(album, page):
 @view('index')
 def show_index():
     """Render frontpage"""
+    session.clear()
     dir_list = os.listdir(app.config['ALBUMS_DIR'])
     full_album_list = [ os.path.basename(album) for album in dir_list ]
     shows = {}
@@ -177,9 +234,8 @@ def show_index():
         if show.is_enabled():
             shows[album] = show
     album_list = shows.keys()
-    album_list.sort()
+    album_list.sort(reverse=True)
     return render_themed('index.html', albums=album_list, shows=shows)
-
 # }}}
 
 # MAIN RUN LOOP {{{

@@ -1,8 +1,10 @@
 # -*- coding: utf-8 -*-
-from flask import json, url_for, abort
+from flask import json, url_for, abort, request, Response
+from functools import wraps
 from werkzeug import cached_property
 from ExifTags import TAGS
 import os, Image
+import bcrypt
 
 # LICENSE {{{
 """
@@ -140,6 +142,36 @@ supported_exiftags = [
 # }}}
 
 # HELPER FUNCTIONS {{{
+def encrypt_password(seed, password):
+    """Encrypt given password using seed as an extra salt"""
+    return bcrypt.hashpw('%s%s' % (seed, password), bcrypt.gensalt())
+
+def validate_password(seed, password, hash):
+    """Validation function for blowfish encrypted password"""
+    return bcrypt.hashpw('%s%s' % (seed, password), hash) == hash
+
+def check_auth(username, password):
+    """This function is called to check if a username /
+    password combination is valid.
+    """
+    return username == 'admin' and password == 'secret'
+
+def authenticate():
+    """Sends a 401 response that enables basic auth"""
+    return Response(
+    'Could not verify your access level for that URL.\n'
+    'You have to login with proper credentials', 401,
+    {'WWW-Authenticate': 'Basic realm="Login Required"'})
+
+def requires_auth(f):
+    @wraps(f)
+    def decorated(*args, **kwargs):
+        auth = request.authorization
+        if not auth or not check_auth(auth.username, auth.password):
+            return authenticate()
+        return f(*args, **kwargs)
+    return decorated
+
 # get_exif_datetime {{{
 def get_exif_datetime(app, album, filename):
     img = Image.open(os.path.join(app.config['ALBUMS_DIR'], album, filename))
@@ -245,7 +277,10 @@ class Show(object):
         self.album = album
         self.show_dir = os.path.join(app.config['SHOWS_DIR'], album)
         self.show_file = os.path.join(self.show_dir, 'show.json')
-        self.data = {'files': []}
+        self.data = {'files': [], 'settings': {}, 'users': {}}
+        self.valid_settings = [
+            'require_authentication',
+        ]
 
         self.load()
 
@@ -267,10 +302,34 @@ class Show(object):
             return self.save()
         return True
 
+    def set_user(self, username, seed, password):
+        self.data['users'][username] = encrypt_password(seed, password)
+
+    def remove_user(self, username):
+        self.data['users'].pop(username)
+
+    def check_auth(self, username, seed, password):
+        if username in self.data['users']:
+            return validate_password(seed, password, self.data['users'][username])
+        return False
+
+    def change_setting(self, setting, value):
+        if setting in self.valid_settings:
+            self.data['settings'][setting] = value
+            return True
+        else:
+            return False
+
+    def get_setting(self, setting):
+        if setting in self.data['settings']:
+            return self.data['settings'][setting]
+        else:
+            return False
+
     def load(self):
         if os.path.exists(self.show_file):
             fp = open(self.show_file, 'r')
-            self.data = json.load(fp)
+            self.data.update(json.load(fp))
 
     def sort_by_exif_datetime(self):
         filenames = []

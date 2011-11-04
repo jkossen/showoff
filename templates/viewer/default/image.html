@@ -1,8 +1,15 @@
 {% extends "viewer/default/layout.html" %}
 
 {% block title %}{{ config.TITLE }} - {{ filename }}{% endblock %}
+{% block extrahead %}
+<link rel="stylesheet" href="{{ url_for('static_files', filename='galleriffic/css/basic.css') }}" type="text/css" />
+<link rel="stylesheet" href="{{ url_for('static_files', filename='galleriffic/css/galleriffic-5.css') }}" type="text/css" />
+<link rel="stylesheet" href="{{ url_for('static_files', filename='galleriffic/css/black.css') }}" type="text/css" />
+{% endblock %}
 
 {% block body %}
+<div id="page">
+<div id="container">
 <h1><a href="{{ url_for('show_album', album=album) }}">{{ album }}</a></h1>
 <h2>{{ filename }}</h2>
 {% for message in get_flashed_messages() %}
@@ -26,5 +33,6 @@
 
 <h3>Exif information</h3>
 {{ exif|exif_table|safe}}
-
+</div>
+</div>
 {% endblock %}

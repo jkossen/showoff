@@ -1,0 +1,40 @@
+{% extends "admin/default/layout.html" %}
+
+{% block title %}{{ album }} - edit users{% endblock %}
+
+{% block extrahead %}
+<link rel="stylesheet" href="{{ url_for('static_files', filename='galleriffic/css/basic.css') }}" type="text/css" />
+<link rel="stylesheet" href="{{ url_for('static_files', filename='galleriffic/css/galleriffic-5.css') }}" type="text/css" />
+<link rel="stylesheet" href="{{ url_for('static_files', filename='galleriffic/css/black.css') }}" type="text/css" />
+<link rel="stylesheet" href="{{ url_for('static_files', filename='css/jquery.lightbox-0.5.css') }}" type="text/css" />
+<!-- We only want the thunbnails to display when javascript is disabled -->
+{% endblock %}
+
+{% block body %}
+<div id="page">
+    <div id="container">
+        <h1><a href="{{ url_for('show_album', album=album) }}">{{ album }}</a></h1>
+
+        <a href="{{ url_for('show_change_setting', album=album, setting='require_authentication', value='True') }}">Enable authentication</a>
+
+        {% for message in get_flashed_messages() %}
+        <div class="flash">{{ message }}</div>
+        {% endfor %}
+
+        {% for user in users %}
+        <h3>{{ user }}</h3>
+         <form action="{{ url_for('show_change_password', album=album) }}" method="POST">
+             <input type="hidden" name="username" value="{{ user }}">
+             <input type="password" name="password">
+             <input type="submit" value="save">
+         </form>
+         <a href="{{ url_for('show_remove_user', album=album, username=user) }}">Delete user</a>
+        {% endfor %}
+
+        <h3>Add new user</h3>
+        <form action="{{ url_for('show_change_password', album=album) }}" method="POST">
+             <input type="text" name="username">
+             <input type="password" name="password">
+             <input type="submit" value="save">
+         </form>
+{% endblock %}

@@ -268,6 +268,12 @@ def grid(album, page=1):
     return render_template(themed('grid.html'), album=album, files=p.entries,
                            paginator=p, show=show, all_files=files)
 
+@app.route(get_route('show_edit_users'))
+def show_edit_users(album):
+    show = Show(app, album)
+    users = show.data['users']
+    return render_template(themed('edit_users.html'), album=album, users=users)
+
 # add_all_images_to_show {{{
 @app.route(get_route('add_all_images_to_show'))
 def add_all_images_to_show(album):
@@ -285,6 +291,36 @@ def add_all_images_to_show(album):
 
     return redirect(request.referrer or url_for('index'))
 # }}}
+
+@app.route(get_route('show_change_setting'))
+def show_change_setting(album, setting, value):
+    show = Show(app, album)
+    if (show.change_setting(setting, value) and show.save()):
+        return redirect(request.referrer or url_for('index'))
+    else:
+        return jsonify(result='Failed')
+
+@app.route(get_route('show_change_password'), methods=['POST'])
+def show_change_password(album):
+    if request.method == 'POST':
+        show = Show(app, album)
+        username = request.form['username']
+        password = request.form['password']
+        show.set_user(username, app.config['SECRET_KEY'], password)
+        if (show.save()):
+            return redirect(request.referrer or url_for('index'))
+        else:
+            return jsonify(result='Failed')
+
+@app.route(get_route('show_remove_user'))
+def show_remove_user(album, username):
+    show = Show(app, album)
+    show.remove_user(username)
+    if (show.save()):
+        return redirect(request.referrer or url_for('index'))
+    else:
+        return jsonify(result='Failed')
+
 # }}}
 
 # MAIN RUN LOOP {{{

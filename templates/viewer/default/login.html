@@ -1,0 +1,29 @@
+{% extends "viewer/default/layout.html" %}
+{% block extratitle %}Login - {% endblock %}
+{% block body %}
+<h2>Login</h2>
+<form action="{{ url_for('login', album=album) }}" method=post>
+    {{ form.csrf }}
+    <table>
+        <tr><td>{{ form.username.label }}</td>
+            <td>{{ form.username }}
+                {% if form.username.errors %}
+                    <ul class="errors">
+                    {% for error in form.username.errors %}<li>{{ error }}</li>{% endfor %}
+                </ul>
+                {% endif %}
+        </td></tr>
+        <tr><td>{{ form.password.label }}</td>
+            <td>
+                {{ form.password }}
+                {% if form.password.errors %}
+                <ul class="errors">
+                    {% for error in form.password.errors %}<li>{{ error }}</li>{% endfor %}
+                </ul>
+                {% endif %}
+        </td></tr>
+    </table>
+    <input type="submit" value="Login">
+</form>
+{% endblock %}
+
