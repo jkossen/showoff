@@ -17,6 +17,7 @@ THUMBNAILS_PER_PAGE = 12
 THUMBNAILS_PER_SMALL_LIST = 8
 ADMIN_THUMBNAILS_PER_PAGE = 12
 ADMIN_GRID_ITEMS_PER_PAGE = 50
+VIEWER_GRID_ITEMS_PER_PAGE = 50
 IMAGE_SIZE = 800
 ALLOWED_SIZES = [ 75, 200, 400, 500, 640, 800, 1024, 1600, 'full' ]
 THEME = 'default'
@@ -30,16 +31,14 @@ ALBUMS_DIR = '/home/jochem/Pictures/fotos'
 # Routes to the view functions in the viewer
 VIEWER_ROUTES = {
     'static_files': 'static_files/<path:filename>',
-    'show_image': '<album>/image/<int:size>/<filename>',
-    'show_image_full': '<album>/image/full/<filename>',
-    'image_page': '<album>/show/<filename>.html',
-    'login': '<album>/login/',
-    'list': '<album>/list/<int:page>.html',
-    'grid': '<album>/grid/',
-    'list_small': '<album>/list_small/<int:page>.html',
+    'get_image': 'image/<album>/<filename>/<size>/',
+    'image_page': 'page/<album>/<filename>.html',
+    'login': 'login/<album>/',
+    'list': 'list/<album>/<int:page>.html',
+    'show': 'list/<album>/<template>/<int:page>.html',
     'album': '<album>.html',
-    'show_galleria': '<album>/galleria/<int:page>.html',
-    'show_slideshow': '<album>/slideshow/<int:page>.html',
+    'show_galleria': 'galleria/<album>/<int:page>.html',
+    'show_slideshow': 'slideshow/<album>/<int:page>.html',
     'index': '',
     }
 

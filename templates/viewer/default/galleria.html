@@ -1,0 +1,60 @@
+{% extends "default/layout.html" %}
+
+{% block extrahead %}
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/1/jquery.min.js"></script>
+<script src="{{ url_for('static_files', filename='galleria/src/galleria.js') }}"></script>
+<script>Galleria.loadTheme('{{ url_for('static_files', filename='galleria/src/themes/classic/galleria.classic.js') }}');</script>
+{% endblock %}
+
+{% block title %}{{ album }} page {{ paginator.page }} of {{ paginator.pages }}{% endblock %}
+
+{% block body %}
+{% for message in get_flashed_messages() %}
+<div class="flash">{{ message }}</div>
+{% endfor %}
+
+<div class="paginator">
+    Pages: <a href="{{ paginator.first }}">&laquo;</a>
+    {%- if paginator.has_previous %}
+    <a href="{{ paginator.previous }}">&lsaquo;</a>
+    {%- else %}<span class="inactive">&laquo;</span>{% endif %}
+    | {{ paginator.page }} / <a href="{{ paginator.last }}">{{ paginator.pages }}</a> |
+    {% if paginator.has_next %}
+    <a href="{{ paginator.next }}">&rsaquo;</a>
+    {%- else %}<span class="inactive">&raquo;</span>{% endif %}
+    <a href="{{ paginator.last }}">&raquo;</a>
+</div>
+
+<div id="images" style="width:600px;height:480px">
+{% for file in files %}
+<a href="{{ url_for('show_image', album=album, filename=file, size=800) }}" title="{{ file }}">
+    <img src="{{ url_for('show_image', album=album, filename=file, size=config.THUMBNAIL_SIZE) }}" alt="{{ file }}" />
+</a>
+{% endfor %}
+</div>
+
+<script>
+    $('#images').galleria({ transition: 'fade', image_crop: false, preload: 1,
+       extend: function(options) {
+        //Galleria.log(this) // the gallery instance
+        //Galleria.log(options) // the gallery options
+
+        // listen to when an image is shown
+        this.bind(Galleria.IMAGE, function(e) {
+            //Galleria.log(e) // the event object may contain custom objects, in this case the main image
+            //Galleria.log(e.imageTarget) // the current image
+
+            // lets make galleria open a lightbox when clicking the main image:
+            $(e.imageTarget).click(this.proxy(function() {
+               var filename = e.imageTarget.src.replace(/^.*\\/, '');
+               this.openLightbox();
+            }));
+        });
+    }
+
+    });
+    //var gallery = Galleria.get(0);
+    //gallery.enterFullscreen();
+</script>
+
+{% endblock %}

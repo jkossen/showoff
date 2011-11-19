@@ -1,4 +1,4 @@
-{% extends "viewer/default/layout.html" %}
+{% extends "default/layout.html" %}
 
 {% block extrahead %}
 <link rel="stylesheet" href="{{ url_for('static_files', filename='galleriffic/css/basic.css') }}" type="text/css" />
@@ -17,7 +17,12 @@
     <tr><th>Preview</th><th>Album title</th><th>Nr of photos</th></tr>
 {% for album in albums %}
 <tr>
-    <td><a href="{{ url_for('show_album', album=album) }}"><img src="{{ url_for('show_image', album=album, size=75, filename=shows[album].data['files'][0]) }}" /></a></td>
+    <td>{% if not shows[album].data['settings']['require_authentication'] %}
+        <a href="{{ url_for('show_album', album=album) }}">
+            <img src="{{ url_for('get_image', album=album, size=75, filename=shows[album].data['files'][0]) }}" />
+        </a>
+        {% endif %}
+    </td>
     <td><a href="{{ url_for('show_album', album=album) }}">{{ album }}</a></td>
     <td>{{ shows[album].nr_of_items() }}</td>
 </tr>

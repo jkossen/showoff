@@ -45,7 +45,7 @@ import os, re, Image
 # }}}
 
 # APP INITIALIZATION {{{
-app = Flask(__name__, static_path=None)
+app = Flask(__name__, static_path=None, template_folder='templates/admin')
 app.config.from_pyfile('config.py')
 app.config.from_envvar('SHOWOFF_ADMIN_CONFIG', silent=True)
 # }}}
@@ -62,7 +62,7 @@ def get_route(function):
 # themed {{{
 def themed(template):
     """Return path to template in configured theme"""
-    return os.path.join('admin', app.config['THEME'], template)
+    return os.path.join(app.config['THEME'], template)
 # }}}
 
 # }}}
@@ -152,7 +152,8 @@ def list(album, page):
     files = filter(ext.search, files)
 
     files.sort()
-    p = Paginator(album, files, app.config['ADMIN_THUMBNAILS_PER_PAGE'], page, 'list')
+    p = Paginator(album, files, app.config['ADMIN_THUMBNAILS_PER_PAGE'], page,
+                  'list', 'list.html')
     return render_template(themed('list.html'), album=album, files=p.entries, paginator=p, show=show, all_files=files)
 # }}}
 
@@ -164,7 +165,9 @@ def list_show(album, page):
     if len(show.data['files']) == 0:
         abort(404)
 
-    p = Paginator(album, show.data['files'], app.config['ADMIN_THUMBNAILS_PER_PAGE'], page, 'list_show')
+    p = Paginator(album, show.data['files'],
+                  app.config['ADMIN_THUMBNAILS_PER_PAGE'], page, 'list_show',
+                  'list.html')
     return render_template(themed('list.html'), album=album, files=p.entries, paginator=p, show=show)
 # }}}
 
@@ -264,7 +267,8 @@ def grid(album, page=1):
     files = filter(ext.search, files)
 
     files.sort()
-    p = Paginator(album, files, app.config['ADMIN_GRID_ITEMS_PER_PAGE'], page, 'grid')
+    p = Paginator(album, files, app.config['ADMIN_GRID_ITEMS_PER_PAGE'], page,
+                  'grid', 'list.html')
     return render_template(themed('grid.html'), album=album, files=p.entries,
                            paginator=p, show=show, all_files=files)
 
@@ -272,7 +276,7 @@ def grid(album, page=1):
 def show_edit_users(album):
     show = Show(app, album)
     users = show.data['users']
-    return render_template(themed('edit_users.html'), album=album, users=users)
+    return render_template(themed('edit_users.html'), album=album, show=show, users=users)
 
 # add_all_images_to_show {{{
 @app.route(get_route('add_all_images_to_show'))
@@ -296,7 +300,7 @@ def add_all_images_to_show(album):
 def show_change_setting(album, setting, value):
     show = Show(app, album)
     if (show.change_setting(setting, value) and show.save()):
-        return redirect(request.referrer or url_for('index'))
+        return jsonify(result='OK')
     else:
         return jsonify(result='Failed')
 

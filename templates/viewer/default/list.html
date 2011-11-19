@@ -1,4 +1,4 @@
-{% extends "viewer/default/layout.html" %}
+{% extends "default/layout.html" %}
 
 {% block title %}{{ album }} page {{ paginator.page }} of {{ paginator.pages }}{% endblock %}
 
@@ -60,29 +60,10 @@ label {
         <div class="flash">{{ message }}</div>
         {% endfor %}
 
-        <div class="paginator">
-            <!--a href="{{ url_for('list_small', album=album, page=page) }}">small version</a> |-->
-            Set: <a href="{{ paginator.first }}">&laquo; first</a>
-            {%- if paginator.has_previous %}
-            <a href="{{ paginator.previous }}">&lsaquo; prev</a>
-            {%- else %}
-            <span class="inactive"> &lsaquo; prev</span>{% endif %}
-            | {{ paginator.page }} /
-            {% if paginator.has_next %}
-            <a href="{{ paginator.last }}">{{ paginator.pages }}</a> |
-            {% else %}
-            {{ paginator.pages }} |
-            {% endif %}
-            {% if paginator.has_next %}
-            <a href="{{ paginator.next }}">next &rsaquo;</a>
-            <a href="{{ paginator.last }}">last &raquo;</a>
-            {%- else %}
-            <span class="inactive">next &rsaquo;</span>
-            <span class="inactive">last &raquo;</span>
-            {% endif %}
-            <!--a href="{{ url_for('show_slideshow', album=album, page=paginator.page) }}">fancy slideshow</a-->
+        {% include "default/_paginator.html" %}
+        <!--div class="paginator">
             <div id="photonav"></div>
-        </div>
+        </div-->
 
         <!-- Start Advanced Gallery Html Containers -->
         <div class="navigation-container">
@@ -92,8 +73,8 @@ label {
                 <ul class="thumbs noscript">
                     {% for filename in files %}
                     <li>
-                    <a class="thumb" name="{{ filename }}" href="{{ url_for('show_image', album=album, filename=filename, size=800) }}" title="{{ filename }}">
-                        <img src="{{ url_for('show_image', album=album, filename=filename, size=config.THUMBNAIL_SIZE) }}" alt="{{ filename }}"/>
+                    <a class="thumb" name="{{ filename }}" href="{{ url_for('get_image', album=album, filename=filename, size=800) }}" title="{{ filename }}">
+                        <img src="{{ url_for('get_image', album=album, filename=filename, size=config.THUMBNAIL_SIZE) }}" alt="{{ filename }}"/>
                     </a>
                     <div class="caption">
                         <div class="image-title">{{ filename }}</div>
@@ -106,10 +87,10 @@ label {
                             <ul>
                             {% for size in config.ALLOWED_SIZES %}
                             {% if size != 'full' %}
-                            <li><a href="{{ url_for('show_image', album=album, filename=filename, size=size) }}">{{ size }}px</a></li>
+                            <li><a href="{{ url_for('get_image', album=album, filename=filename, size=size) }}">{{ size }}px</a></li>
                             {% endif %}
                             {% endfor %}
-                            <li><a href="{{ url_for('show_image_full', album=album, filename=filename) }}">original</a></li>
+                            <li><a href="{{ url_for('get_image', album=album, filename=filename, size='full') }}">original</a></li>
                         </ul>
                         </div>
                     </div>

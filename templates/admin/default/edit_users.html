@@ -1,4 +1,4 @@
-{% extends "admin/default/layout.html" %}
+{% extends "default/layout.html" %}
 
 {% block title %}{{ album }} - edit users{% endblock %}
 
@@ -7,7 +7,22 @@
 <link rel="stylesheet" href="{{ url_for('static_files', filename='galleriffic/css/galleriffic-5.css') }}" type="text/css" />
 <link rel="stylesheet" href="{{ url_for('static_files', filename='galleriffic/css/black.css') }}" type="text/css" />
 <link rel="stylesheet" href="{{ url_for('static_files', filename='css/jquery.lightbox-0.5.css') }}" type="text/css" />
+<script type="text/javascript" src="{{ url_for('static_files', filename='galleriffic/js/jquery-1.3.2.js') }}"></script>
 <!-- We only want the thunbnails to display when javascript is disabled -->
+<script>
+    show_toggle_require_auth = function(element, value) {
+        $(element).html('please wait ...');
+        url = '{{ url_for('show_change_setting', album=album, setting='require_authentication', value='no') }}';
+        result = $.getJSON(url, false, function() {
+            img = (value == 'yes') ? '{{ url_for('static_files', filename='on.png') }}' : '{{ url_for('static_files', filename='off.png') }}';
+            new_text = '<img src="' + img + '">';
+            new_value = (value == 'yes') ? 'no' : 'yes';
+            done_html = '<a href="#" onclick=\'return show_toggle_require_auth("' + element + '", "' + new_value + '");\'>' + new_text + '</a>';
+            $(element).html(done_html);
+        });
+        return false;
+    }
+</script>
 {% endblock %}
 
 {% block body %}
@@ -15,7 +30,14 @@
     <div id="container">
         <h1><a href="{{ url_for('show_album', album=album) }}">{{ album }}</a></h1>
 
-        <a href="{{ url_for('show_change_setting', album=album, setting='require_authentication', value='True') }}">Enable authentication</a>
+        require authentication:
+        <span id="toggle_show">
+        {% if show.get_setting('require_authentication') == 'yes' %}
+        <a href="#" onclick="return show_toggle_require_auth('#toggle_show', 'no')"><img src="{{ url_for('static_files', filename='on.png') }}" alt="disable"></a>
+        {% else %}
+        <a href="#" onclick="return show_toggle_require_auth('#toggle_show', 'yes')"><img src="{{ url_for('static_files', filename='off.png') }}" alt="disable"></a>
+        {% endif %}
+        </span>
 
         {% for message in get_flashed_messages() %}
         <div class="flash">{{ message }}</div>

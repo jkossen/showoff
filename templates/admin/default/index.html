@@ -1,4 +1,4 @@
-{% extends "viewer/default/layout.html" %}
+{% extends "default/layout.html" %}
 
 {% block extrahead %}
 <link rel="stylesheet" href="{{ url_for('static_files', filename='galleriffic/css/basic.css') }}" type="text/css" />
@@ -7,21 +7,18 @@
 {% endblock %}
 {% block body %}
 <div class="page">
-<div id="page">
-<div id="container">
-<h1><a href="{{ url_for('show_index') }}">{{ config.TITLE }}</a></h1>
+    <div id="page">
+        <div id="container">
+            <h1><a href="{{ url_for('show_index') }}">{{ config.TITLE }}</a></h1>
 
-<h2>Available photo albums:</h2>
+            <h2>Available photo albums:</h2>
 
-<table style="width: 800px;">
-    <tr><th>Album title</th></tr>
-{% for album in albums %}
-<tr>
-    <td><a href="{{ url_for('show_album', album=album) }}">{{ album }}</a></td>
-</tr>
-{% endfor %}
-</table>
-</div>
-</div>
+            <ul>
+                {% for album in albums %}
+                <li><a href="{{ url_for('show_album', album=album) }}">{{ album }}</a></li>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
 </div>
 {% endblock %}

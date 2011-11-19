@@ -1,15 +1,13 @@
-{% extends "viewer/default/layout.html" %}
+{% extends "default/layout.html" %}
 
 {% block title %}{{ album }} - grid view{% endblock %}
 
 {% block extrahead %}
-<link rel="stylesheet" href="{{ url_for('static_files', filename='galleriffic/css/basic.css') }}" type="text/css" />
-<link rel="stylesheet" href="{{ url_for('static_files', filename='galleriffic/css/galleriffic-5.css') }}" type="text/css" />
-<link rel="stylesheet" href="{{ url_for('static_files', filename='galleriffic/css/black.css') }}" type="text/css" />
-<script type="text/javascript" src="{{ url_for('static_files', filename='galleriffic/js/jquery-1.3.2.js') }}"></script>
-<script type="text/javascript" src="{{ url_for('static_files', filename='galleriffic/js/jquery.history.js') }}"></script>
-<script type="text/javascript" src="{{ url_for('static_files', filename='galleriffic/js/jquery.galleriffic.js') }}"></script>
-<script type="text/javascript" src="{{ url_for('static_files', filename='galleriffic/js/jquery.opacityrollover.js') }}"></script>
+<script src="{{ url_for('static_files', filename='js/jquery.js') }}"></script>
+<script src="{{ url_for('static_files', filename='jquery.blockUI.js') }}"></script>
+
+<link rel="stylesheet" href="{{ url_for('static_files', filename='css/jquery.lightbox-0.5.css') }}">
+<script src="{{ url_for('static_files', filename='js/jquery.lightbox-0.5.js') }}"></script>
 
 <!-- We only want the thunbnails to display when javascript is disabled -->
 <script type="text/javascript">
@@ -58,14 +56,29 @@ label {
         {% for message in get_flashed_messages() %}
         <div class="flash">{{ message }}</div>
         {% endfor %}
-        {% for filename in show.data['files'] %}
-        <a class="thumb" style="float:left;width:{{config.THUMBNAIL_SIZE}}px;height:{{config.THUMBNAIL_SIZE}}px;padding:10px;" name="{{ filename }}" href="{{ url_for('show_image', album=album, filename=filename, size=800) }}" title="{{ filename }}">
-            <img src="{{ url_for('show_image', album=album, filename=filename, size=config.THUMBNAIL_SIZE) }}" alt="{{ filename }}"/>
+        {% include "default/_paginator.html" %}
+        {% for filename in files %}
+        <a class="lightbox thumb" style="float:left;width:{{config.GRID_SIZE}}px;height:{{config.GRID_SIZE}}px;padding:10px;" name="{{ filename }}" href="{{ url_for('get_image', album=album, filename=filename, size=800) }}" title="{{ filename }}">
+            <img src="{{ url_for('get_image', album=album, filename=filename, size=config.GRID_SIZE) }}" alt="{{ filename }}"/>
         </a>
         {% endfor %}
-        <div style="clear: both;"></div>
+        <div class="spacer"></div>
+        {% include "default/_paginator.html" %}
         <a href="{{ url_for('show_index') }}">Other albums</a>
     </div>
 </div>
 <div id="footer">&copy; 2010 Jochem Kossen</div>
+<script>
+    $(function() {
+        $('a.lightbox').lightBox({
+            imageLoading: '{{ url_for('static_files', filename='images/lightbox-ico-loading.gif') }}',
+            imageBtnPrev: '{{ url_for('static_files', filename='images/lightbox-btn-prev.gif') }}',
+            imageBtnNext: '{{ url_for('static_files', filename='images/lightbox-btn-next.gif') }}',
+            imageBtnClose: '{{ url_for('static_files', filename='images/lightbox-btn-close.gif') }}',
+            imageBlank: '{{ url_for('static_files', filename='images/lightbox-blank.gif') }}',
+            containerResizeSpeed: 350,
+            fixedNavigation: true,
+        });
+    });
+</script>
 {% endblock %}

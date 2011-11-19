@@ -1,4 +1,4 @@
-{% extends "viewer/default/layout.html" %}
+{% extends "default/layout.html" %}
 
 {% block extrahead %}
 <link rel="stylesheet" href="{{ url_for('static_files', filename='galleriffic/css/basic.css') }}" type="text/css" />
@@ -7,16 +7,16 @@
 <link rel="stylesheet" type="text/css" href="{{ url_for('static_files', filename='slideshow/css/slideshow.css') }}" media="screen" />
 <script src="{{ url_for('static_files', filename='slideshow/js/mootools.js') }}"></script>
 <script src="{{ url_for('static_files', filename='slideshow/js/slideshow.js') }}"></script>
-<script type="text/javascript" src="{{ url_for('static_files', filename='slideshow/js/slideshow.kenburns.js') }}"></script>
-<script type="text/javascript">
+<script src="{{ url_for('static_files', filename='slideshow/js/slideshow.kenburns.js') }}"></script>
+<script>
     window.addEvent('domready', function(){
     var images = {
-    {% for file in files %}'{{ url_for('show_image', album=album, filename=file, size=1024) }}': { 'caption': '{{ file }}', href: '{{ url_for('image_page', album=album, filename=file) }}' }{% if not loop.last %},{% endif %}{% endfor %}
+    {% for file in files %}'{{ url_for('get_image', album=album, filename=file, size=1024) }}': { 'caption': '{{ file }}', href: '{{ url_for('image_page', album=album, filename=file) }}' }{% if not loop.last %},{% endif %}{% endfor %}
     };
     var myShow = new Slideshow.KenBurns('show', images, { captions: true, controller: true, resize: false, delay: 5000, duration: 2000, hu: '', linked: true });
     });
 </script>
-<style type="text/css">
+<style>
 .slideshow-images {
     width: 800px;
     height: 600px;
@@ -41,21 +41,10 @@
 <p>
 </p>
 
-<div class="paginator">
-    Pages: <a href="{{ paginator.first }}">&laquo;</a>
-    {%- if paginator.has_previous %}
-    <a href="{{ paginator.previous }}">&lsaquo;</a>
-    {%- else %}<span class="inactive">&laquo;</span>{% endif %}
-    | {{ paginator.page }} / <a href="{{ paginator.last }}">{{ paginator.pages }}</a> |
-    {% if paginator.has_next %}
-    <a href="{{ paginator.next }}">&rsaquo;</a>
-    {%- else %}<span class="inactive">&raquo;</span>{% endif %}
-    <a href="{{ paginator.last }}">&raquo;</a>
-    <span style="float:right;"><a href="{{ url_for('list', album=album, page=page) }}">regular view</a></span>
-</div>
+{% include "default/_paginator.html" %}
 
 <div id="show" class="slideshow">
-    <img src="{{ url_for('show_image', album=album, filename=files[0], size=800) }}" width="800" height="600" />
+    <img src="{{ url_for('get_image', album=album, filename=files[0], size=800) }}" width="800" height="600" />
 </div>
 </div>
 </div>
