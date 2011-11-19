@@ -37,12 +37,12 @@ viewing content, not manipulation.
 # }}}
 
 # IMPORTS {{{
-from flask import Flask, abort, render_template, send_from_directory, url_for, redirect, json, session, request, Response, flash
+from flask import Flask, abort, render_template, send_from_directory, session, request
 from controllers import PageController, ImageController
 from functools import wraps
-from libshowoff import Show, supported_exiftags, update_cache, update_exif, get_edit_or_original
+from libshowoff import Show
 from forms import LoginForm
-import os, re, Image
+import os
 # }}}
 
 # APP INITIALIZATION {{{
