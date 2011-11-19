@@ -28,6 +28,8 @@ SECRET_KEY = 'CHANGE_THIS'
 
 ALBUMS_DIR = '/home/jochem/Pictures/fotos'
 
+VIEWER_LIST_TEMPLATES = ['list', 'list_small', 'grid', 'galleria']
+
 # Routes to the view functions in the viewer
 VIEWER_ROUTES = {
     'static_files': 'static_files/<path:filename>',

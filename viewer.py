@@ -144,7 +144,7 @@ def image_page(album, filename):
 @view('list')
 @login_required
 def list(album, page, template='list'):
-    if template in ['list', 'list_small', 'grid', 'galleria']:
+    if template in app.config['VIEWER_LIST_TEMPLATES']:
         return get_show(album, page, 'list', template)
     else:
         abort(404)
