@@ -10,6 +10,7 @@ class Controller(object):
             func = getattr(self, action)
             return func(*args, **kwargs)
         except AttributeError:
+            self.app.logger.error('Unknown function called: %s' % action)
             # this makes debugging a bit harder ;-)
             abort(404)
 

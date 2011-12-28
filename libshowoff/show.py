@@ -1,5 +1,6 @@
-from authentication import validate_password
-import os, json
+from flask import session
+from authentication import encrypt_password, validate_password
+import os, re, json
 
 class Show(object):
     def __init__(self, app, album):
@@ -39,11 +40,10 @@ class Show(object):
         self.data['users'].pop(username)
 
     def need_authentication(self):
-        if (self.get_setting('require_authentication') == 'yes'):
-            if session.get('username') and (session.get('album') == self.album):
+        if (self.get_setting('require_authentication') != 'no'):
+            if session.has_key('username') and session.has_key('album') and session['album'] == self.album:
                 return False
-            else:
-                return True
+            return True
         return False
 
     def check_auth(self, username, seed, password):
@@ -52,6 +52,7 @@ class Show(object):
         return False
 
     def change_setting(self, setting, value):
+        self.app.logger.debug('show.change_setting %s %s' % (setting, value))
         if setting in self.valid_settings:
             self.data['settings'][setting] = value
             return True
@@ -76,6 +77,18 @@ class Show(object):
             filenames.append((datetime, filename))
         self.data['files'] = [v for (k, v) in sorted(filenames)]
         return self.save()
+
+    def add_all_images(self):
+        """Add all images in album to the show"""
+        files = os.listdir(os.path.join(self.app.config['ALBUMS_DIR'], self.album))
+
+        # only list .jpg files
+        ext = re.compile(".jpg$", re.IGNORECASE)
+        files = filter(ext.search, files)
+        files.sort()
+
+        for filename in files:
+            self.add_image(filename)
 
     def save(self):
         try:

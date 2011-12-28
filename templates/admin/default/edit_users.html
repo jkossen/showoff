@@ -12,7 +12,9 @@
 <script>
     show_toggle_require_auth = function(element, value) {
         $(element).html('please wait ...');
-        url = '{{ url_for('show_change_setting', album=album, setting='require_authentication', value='no') }}';
+        url_yes = '{{ url_for('show_change_setting', album=album, setting='require_authentication', value='yes') }}';
+        url_no = '{{ url_for('show_change_setting', album=album, setting='require_authentication', value='no') }}';
+        url = (value == 'yes') ? url_yes : url_no;
         result = $.getJSON(url, false, function() {
             img = (value == 'yes') ? '{{ url_for('static_files', filename='on.png') }}' : '{{ url_for('static_files', filename='off.png') }}';
             new_text = '<img src="' + img + '">';

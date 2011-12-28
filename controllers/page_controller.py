@@ -8,13 +8,19 @@ class PageController(Controller):
         template_path = os.path.join(self.app.config['THEME'], template)
         return render_template(template_path, **options)
 
-    def image_info(self, album, filename, template='index.html'):
+    def image_info(self, album, filename, template='image.html'):
+        show = Show(self.app, album)
         exifdir = os.path.join(self.app.config['CACHE_DIR'], album, 'exif')
         f = open(os.path.join(exifdir, filename + '.exif'))
         exif_array = f.readlines()
         f.close()
 
-        return self.render_themed(template, album=album, filename=filename, exif=exif_array)
+        return self.render_themed(template, album=album, filename=filename,
+                                  exif=exif_array, show=show)
+
+    def paginated_overview(self, album, page, files, endpoint, template):
+        p = Paginator(album, files, self.app.config['THUMBNAILS_PER_PAGE'], page, endpoint, template)
+        return self.render_themed(template + '.html', album=album, files=p.entries, paginator=p, page=page)
 
     def get_show(self, album, page, endpoint, template):
         show = Show(self.app, album)
@@ -23,9 +29,17 @@ class PageController(Controller):
             abort(404)
 
         files = show.data['files']
-        p = Paginator(album, files, self.app.config['THUMBNAILS_PER_PAGE'], page, endpoint, template)
+        return self.paginated_overview(album, page, files, endpoint, template)
 
-        return self.render_themed(template + '.html', album=album, files=p.entries, paginator=p, page=page)
+    def get_nonpaginated_show(self, album, template):
+        show = Show(self.app, album)
+
+        if len(show.data['files']) == 0:
+            abort(404)
+
+        files = show.data['files']
+
+        return self.render_themed(template + '.html', album=album, files=files)
 
     def slideshow(self, album, page, endpoint, template='slideshow.html'):
         files = None
@@ -41,7 +55,6 @@ class PageController(Controller):
         return self.render_themed(template, album=album, files=p.entries, paginator=p, page=page)
 
     def index(self, template='index.html'):
-        session.clear()
         dir_list = os.listdir(self.app.config['ALBUMS_DIR'])
         full_album_list = [ os.path.basename(album) for album in dir_list ]
         shows = {}

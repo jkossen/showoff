@@ -37,8 +37,8 @@ viewing content, not manipulation.
 # }}}
 
 # IMPORTS {{{
-from flask import Flask, abort, render_template, send_from_directory, session, request
-from controllers import PageController, ImageController
+from flask import Flask, abort, render_template, send_from_directory, request, redirect, session, url_for
+from controllers import AuthenticationController, PageController, ImageController
 from functools import wraps
 from libshowoff import Show
 from forms import LoginForm
@@ -57,6 +57,11 @@ def get_show(album, page, endpoint, template):
     return controller.act('get_show', album=album, page=page,
                           endpoint=endpoint, template=template)
 
+def get_nonpaginated_show(album, template):
+    controller = PageController(app)
+    return controller.act('get_nonpaginated_show', album=album,
+                          template=template)
+
 def view(rule, **options):
     """ Decorator for views """
     complete_rule = '/%s%s' % (app.config['VIEWER_PREFIX'],
@@ -68,29 +73,18 @@ def view(rule, **options):
     return decorator
 
 def render_themed(template, **options):
-    """ Render template from a configured subdir to implement themes """
     template_path = os.path.join(app.config['THEME'], template)
     return render_template(template_path, **options)
 
-def login_required(fun):
-    """Decorator for functions which require an authorized user"""
-    @wraps(fun)
+def login_required(f):
+    @wraps(f)
     def decorated_function(album, *args, **kwargs):
-        """Decorated function"""
-        if need_authentication(album):
-            return login(album)
-        return fun(album, *args, **kwargs)
-
+        show = Show(app, album)
+        if show.need_authentication():
+            session['next_url'] = request.url
+            return redirect(url_for('login', album=album))
+        return f(album, *args, **kwargs)
     return decorated_function
-
-def need_authentication(album):
-    show = Show(app, album)
-    if (show.get_setting('require_authentication') == 'yes'):
-        if session.get('username') and (session.get('album') == album):
-            return False
-        else:
-            return True
-    return False
 # }}}
 
 # TEMPLATE TAGS {{{
@@ -104,22 +98,16 @@ def get_exif_table(exif):
 # }}}
 
 # VIEWS {{{
-@view('login', methods=['GET','POST'])
+@view('login', methods=['GET', 'POST'])
 def login(album):
-    """Check user credentials and initialize session"""
-    form = LoginForm()
-    show = Show(app, album)
-
     if request.method == 'POST':
-        form = LoginForm(request.form)
-        if form.validate():
-            if show.check_auth(request.form['username'], app.config['SECRET_KEY'], request.form['password']):
-                session.clear()
-                session['username'] = request.form['username']
-                session['album'] = album
-                return list(album, 1)
-
-    return render_themed('login.html', album=album, form=form)
+        if AuthenticationController(app).act('login', album=album):
+            if session.has_key('next_url') and session['next_url'] is not None and session['next_url'] != url_for('login', album=album):
+                next_url = session['next_url']
+                session.pop('next_url', None)
+                return redirect(next_url)
+            return redirect(url_for('show_album', album=album))
+    return render_themed('login.html', album=album, form=LoginForm())
 
 @view('static_files')
 def static_files(filename):
@@ -148,6 +136,11 @@ def list(album, page, template='list'):
         return get_show(album, page, 'list', template)
     else:
         abort(404)
+
+@view('show_nonpaginated')
+@login_required
+def show_nonpaginated(album, template='grid_full'):
+    return get_nonpaginated_show(album, template)
 
 @view('show_slideshow')
 @login_required

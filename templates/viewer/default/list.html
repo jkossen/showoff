@@ -73,7 +73,7 @@ label {
                 <ul class="thumbs noscript">
                     {% for filename in files %}
                     <li>
-                    <a class="thumb" name="{{ filename }}" href="{{ url_for('get_image', album=album, filename=filename, size=800) }}" title="{{ filename }}">
+                    <a class="thumb" name="{{ filename }}" href="{{ url_for('get_image', album=album, filename=filename, size=640) }}" title="{{ filename }}">
                         <img src="{{ url_for('get_image', album=album, filename=filename, size=config.THUMBNAIL_SIZE) }}" alt="{{ filename }}"/>
                     </a>
                     <div class="caption">

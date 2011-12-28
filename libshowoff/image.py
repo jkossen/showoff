@@ -1,4 +1,4 @@
-import os
+import os, Image
 
 def is_edited(app, album, filename):
     edit = os.path.join(app.config['EDITS_DIR'], album)
@@ -8,7 +8,6 @@ def is_edited(app, album, filename):
     else:
         return False
 
-# get_edit_or_original {{{
 def get_edit_or_original(app, album, filename):
     edit = os.path.join(app.config['EDITS_DIR'], album)
     orig = os.path.join(app.config['ALBUMS_DIR'], album)
@@ -18,3 +17,16 @@ def get_edit_or_original(app, album, filename):
     else:
         return orig
 
+def rotate_image(app, album, filename, steps=1):
+    if steps < 1:
+        steps = 1
+    if steps > 3:
+        steps = 3
+
+    imgfile = os.path.join(get_edit_or_original(app, album, filename), filename)
+    img = Image.open(imgfile)
+    img = img.rotate(steps * -90)
+    efile = os.path.join(app.config['EDITS_DIR'], album, filename)
+    if not os.path.exists(os.path.join(app.config['EDITS_DIR'], album)):
+        os.mkdir(os.path.join(app.config['EDITS_DIR'], album))
+    img.save(efile, "JPEG")

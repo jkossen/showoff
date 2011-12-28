@@ -1,5 +1,5 @@
 from ExifTags import TAGS
-import os
+import os, Image
 
 supported_exiftags = [
     "ImageWidth",

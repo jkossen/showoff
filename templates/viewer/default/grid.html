@@ -8,6 +8,7 @@
 
 <link rel="stylesheet" href="{{ url_for('static_files', filename='css/jquery.lightbox-0.5.css') }}">
 <script src="{{ url_for('static_files', filename='js/jquery.lightbox-0.5.js') }}"></script>
+<script src="{{ url_for('static_files', filename='js/jquery.lazyload.min.js') }}"></script>
 
 <!-- We only want the thunbnails to display when javascript is disabled -->
 <script type="text/javascript">
@@ -59,7 +60,7 @@ label {
         {% include "default/_paginator.html" %}
         {% for filename in files %}
         <a class="lightbox thumb" style="float:left;width:{{config.GRID_SIZE}}px;height:{{config.GRID_SIZE}}px;padding:10px;" name="{{ filename }}" href="{{ url_for('get_image', album=album, filename=filename, size=800) }}" title="{{ filename }}">
-            <img src="{{ url_for('get_image', album=album, filename=filename, size=config.GRID_SIZE) }}" alt="{{ filename }}"/>
+            <img class="lazy" data-original="{{ url_for('get_image', album=album, filename=filename, size=config.GRID_SIZE) }}" src="img/grey.gif" alt="{{ filename }}"/>
         </a>
         {% endfor %}
         <div class="spacer"></div>
@@ -70,6 +71,7 @@ label {
 <div id="footer">&copy; 2010 Jochem Kossen</div>
 <script>
     $(function() {
+        $("img.lazy").lazyload();
         $('a.lightbox').lightBox({
             imageLoading: '{{ url_for('static_files', filename='images/lightbox-ico-loading.gif') }}',
             imageBtnPrev: '{{ url_for('static_files', filename='images/lightbox-btn-prev.gif') }}',

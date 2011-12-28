@@ -45,7 +45,7 @@
             </a>
             <div id="select-for-show">publish:
                 <span id="toggle-show-{{ loop.index }}">
-                    {% if filename in show.data['files'] %}
+                    {% if filename in files %}
                     <a  href="#"
                         onclick='return toggle_show("#toggle-show-{{ loop.index }}",
                         "{{ url_for('remove_image_from_show', album=album, filename=filename) }}", "{{ url_for('add_image_to_show', album=album, filename=filename) }}", false);'>
@@ -88,7 +88,7 @@
         });
     });
 
-    var images = [ {% for filename in all_files %}'{{ filename }}'{% if not loop.last %}, {% endif %}{% endfor %} ];
+    var images = [ {% for filename in files %}'{{ filename }}'{% if not loop.last %}, {% endif %}{% endfor %} ];
     _rotate_all_images = function(index) {
         percentage_complete = Math.round((index * 100) / images.length);
         $('#progress').html(percentage_complete + ' % done (' + images[index] + ')');
