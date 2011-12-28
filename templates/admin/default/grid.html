@@ -39,6 +39,7 @@
 
         {% for filename in files %}
         <div class="grid-item">
+            {{ filename }}<br>
             <a class="lightbox grid-item-image" style="width:{{config.GRID_SIZE}}px;height:{{config.GRID_SIZE}}px;" name="{{ filename }}"
                 href="{{ url_for('show_image', album=album, filename=filename, size=800) }}" title="{{ filename }}">
                 <img src="{{ url_for('show_image', album=album, filename=filename, size=config.GRID_SIZE) }}" alt="{{ filename }}">
@@ -60,6 +61,16 @@
                     {% endif %}
                 </span>
             </div>
+            <div>rotate:
+                <a href="#" onclick='rotate("{{ url_for("image_rotate", album=album, filename=filename, steps=1) }}");return false;'>¼</a> &raquo;
+                <a href="#" onclick='rotate("{{ url_for("image_rotate", album=album, filename=filename, steps=2) }}");return false;'>½</a> &raquo;
+                <a href="#" onclick='rotate("{{ url_for("image_rotate", album=album, filename=filename, steps=3) }}");return false;'>¾</a>
+            </div>
+
+            <div class="image-desc">
+                <a href="{{ url_for('image_page', album=album, filename=filename) }}">image page</a>
+            </div>
+
         </div>
         {% endfor %}
 
