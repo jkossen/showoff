@@ -54,7 +54,7 @@ def themed(template):
     """Return path to template in configured theme"""
     return os.path.join(app.config['THEME'], template)
 
-def _paginated_overview(album, page, endpoint='grid', template='grid'):
+def _paginated_overview(album, page, endpoint='list', template='grid'):
     controller = PageController(app)
     files = os.listdir(os.path.join(app.config['ALBUMS_DIR'], album))
 
@@ -109,17 +109,14 @@ def rotate_url():
     # dummy
     pass
 
-@app.route(get_route('grid'))
-def grid(album, page=1):
-    return _paginated_overview(album, page)
-
+@app.route(get_route('list_templated'))
 @app.route(get_route('list'))
-def list(album, page):
-    return _paginated_overview(album, page, 'list', 'list')
+def list(album, page, template='grid'):
+    return _paginated_overview(album, page, 'list', template)
 
 @app.route(get_route('show_album'))
 def show_album(album):
-    return grid(album)
+    return list(album, 1)
 
 @app.route(get_route('index'))
 def show_index():
