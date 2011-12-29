@@ -19,8 +19,15 @@ class PageController(Controller):
                                   exif=exif_array, show=show)
 
     def paginated_overview(self, album, page, files, endpoint, template):
+        ext = re.compile(".jpg$", re.IGNORECASE)
+        all_files = os.listdir(os.path.join(self.app.config['ALBUMS_DIR'], album))
+        all_files = filter(ext.search, all_files)
+        all_files.sort()
+
         p = Paginator(album, files, self.app.config['THUMBNAILS_PER_PAGE'], page, endpoint, template)
-        return self.render_themed(template + '.html', album=album, files=p.entries, paginator=p, page=page)
+        return self.render_themed(template + '.html', album=album,
+                                  files=p.entries, paginator=p, page=page,
+                                  all_files=all_files)
 
     def get_show(self, album, page, endpoint, template):
         show = Show(self.app, album)

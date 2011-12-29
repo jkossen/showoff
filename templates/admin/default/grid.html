@@ -99,10 +99,10 @@
         });
     });
 
-    var images = [ {% for filename in files %}'{{ filename }}'{% if not loop.last %}, {% endif %}{% endfor %} ];
+    var images = [ {% for filename in all_files %}'{{ filename }}'{% if not loop.last %}, {% endif %}{% endfor %} ];
     _rotate_all_images = function(index) {
         percentage_complete = Math.round((index * 100) / images.length);
-        $('#progress').html(percentage_complete + ' % done (' + images[index] + ')');
+        $('#progress').html(percentage_complete + ' % done (' + index + ' of ' + images.length + ': ' + images[index] + ')');
         $.ajax({
             url: '{{ url_for('rotate_url', album=album) }}' + images[index] + '/',
             context: document.body,
