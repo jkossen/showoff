@@ -37,50 +37,48 @@
 
         {% include "default/_paginator.html" %}
 
-        {% for filename in files %}
-        <div class="grid-item">
-            {{ filename }}<br>
-            <a class="lightbox grid-item-image" style="width:{{config.GRID_SIZE}}px;height:{{config.GRID_SIZE}}px;" name="{{ filename }}"
-                href="{{ url_for('show_image', album=album, filename=filename, size=800) }}" title="{{ filename }}">
-                <img src="{{ url_for('show_image', album=album, filename=filename, size=config.GRID_SIZE) }}" alt="{{ filename }}">
-            </a>
-            <div id="select-for-show">publish:
-                <span id="toggle-show-{{ loop.index }}">
-                    {% if filename in files %}
-                    <a  href="#"
-                        onclick='return toggle_show("#toggle-show-{{ loop.index }}",
-                        "{{ url_for('remove_image_from_show', album=album, filename=filename) }}", "{{ url_for('add_image_to_show', album=album, filename=filename) }}", false);'>
-                        <img src="{{ url_for('static_files', filename='on.png') }}">
-                    </a>
-                    {% else %}
-                    <a href="#"
-                        onclick='return toggle_show("#toggle-show-{{ loop.index }}",
-                        "{{ url_for('add_image_to_show', album=album, filename=filename) }}", "{{ url_for('remove_image_from_show', album=album, filename=filename) }}", true);'>
-                        <img src="{{ url_for('static_files', filename='off.png') }}">
-                    </a>
-                    {% endif %}
-                </span>
+        <div class="grid-container">
+            {% for filename in files %}
+            <div class="grid-item">
+                <a class="grid-item-image" style="width:{{config.GRID_SIZE}}px;height:{{config.GRID_SIZE}}px;" name="{{ filename }}"
+                    href="{{ url_for('image_page', album=album, filename=filename) }}" title="{{ filename }}">
+                    <img src="{{ url_for('show_image', album=album, filename=filename, size=config.GRID_SIZE) }}" alt="{{ filename }}">
+                </a>
+                <div id="select-for-show">publish:
+                    <span id="toggle-show-{{ loop.index }}">
+                        {% if filename in files %}
+                        <a  href="#"
+                            onclick='return toggle_show("#toggle-show-{{ loop.index }}",
+                            "{{ url_for('remove_image_from_show', album=album, filename=filename) }}", "{{ url_for('add_image_to_show', album=album, filename=filename) }}", false);'>
+                            <img src="{{ url_for('static_files', filename='on.png') }}">
+                        </a>
+                        {% else %}
+                        <a href="#"
+                            onclick='return toggle_show("#toggle-show-{{ loop.index }}",
+                            "{{ url_for('add_image_to_show', album=album, filename=filename) }}", "{{ url_for('remove_image_from_show', album=album, filename=filename) }}", true);'>
+                            <img src="{{ url_for('static_files', filename='off.png') }}">
+                        </a>
+                        {% endif %}
+                    </span>
+                </div>
+                <div>rotate:
+                    <a href="#" onclick='rotate("{{ url_for("image_rotate", album=album, filename=filename, steps=1) }}");return false;'>¼</a> &raquo;
+                    <a href="#" onclick='rotate("{{ url_for("image_rotate", album=album, filename=filename, steps=2) }}");return false;'>½</a> &raquo;
+                    <a href="#" onclick='rotate("{{ url_for("image_rotate", album=album, filename=filename, steps=3) }}");return false;'>¾</a>
+                </div>
             </div>
-            <div>rotate:
-                <a href="#" onclick='rotate("{{ url_for("image_rotate", album=album, filename=filename, steps=1) }}");return false;'>¼</a> &raquo;
-                <a href="#" onclick='rotate("{{ url_for("image_rotate", album=album, filename=filename, steps=2) }}");return false;'>½</a> &raquo;
-                <a href="#" onclick='rotate("{{ url_for("image_rotate", album=album, filename=filename, steps=3) }}");return false;'>¾</a>
-            </div>
-
-            <div class="image-desc">
-                <a href="{{ url_for('image_page', album=album, filename=filename) }}">image page</a>
-            </div>
-
+            {% endfor %}
         </div>
-        {% endfor %}
 
-        <ul>
-            <li><a href="{{ url_for('show_edit_users', album=album) }}">Edit authentication settings</a></li>
-            <li><a href="#" onclick='rotate_all_images(0);return false;'>Rotate all images based on exif info</a></li>
-            <li><a href="{{ url_for('add_all_images_to_show', album=album) }}">Add all images to show</a></li>
-            <li><a href="{{ url_for('sort_show_by_exifdate', album=album) }}">Sort show by exifdate</a></li>
-            <li><a href="{{ url_for('show_index') }}">Other albums</a><br>
-        </ul>
+        <div class="sidebar">
+            <ul>
+                <li><a href="{{ url_for('show_edit_users', album=album) }}">Edit authentication settings</a></li>
+                <li><a href="#" onclick='rotate_all_images(0);return false;'>Rotate all images based on exif info</a></li>
+                <li><a href="{{ url_for('add_all_images_to_show', album=album) }}">Add all images to show</a></li>
+                <li><a href="{{ url_for('sort_show_by_exifdate', album=album) }}">Sort show by exifdate</a></li>
+                <li><a href="{{ url_for('show_index') }}">Other albums</a><br>
+            </ul>
+        </div>
         <div class="spacer"></div>
         {% include "default/_paginator.html" %}
     </div>

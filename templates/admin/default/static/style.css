@@ -1,10 +1,13 @@
-body            { font-family: sans-serif; background: #000; color: #fff; font-size: 12px; }
+body            { font-family: sans-serif; background: #000; color: #fff; font-size: 12px; margin-left: 2%; margin-right:2%; }
 a, h1, h2       { color: #ff7700; }
 h1, h2          { font-family: 'Verdana', sans-serif; margin: 0; }
-h1              { border-bottom: 2px solid #eee; }
+h1              { border-bottom: 2px solid #eee; font-size: 24px; line-height: 36px; margin-bottom: 5px; }
 h2              { font-size: 1.2em; }
 img { border: 0px; }
+th { text-align: left; }
+td { vertical-align: top; }
 
+h1 a { text-decoration: none; }
 .entries        { list-style: none; margin: 0; padding: 0; }
 .entries li     { margin: 0.8em 1.2em; }
 .entries li h2  { margin-left: -1em; }
@@ -58,6 +61,18 @@ label {
     clear:both;
     padding-top: 10px;
     vertical-align: middle;
+}
+
+.sidebar {
+    color: #ff7700;
+    width: 14%;
+    float:left;
+    line-height: 18px;
+}
+
+.grid-container {
+    width: 84%;
+    float:left;
 }
 
 .grid-item {
