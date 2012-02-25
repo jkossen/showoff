@@ -24,6 +24,21 @@
         });
         return false;
     }
+
+    show_toggle_require_auth = function(element, value) {
+        $(element).html('please wait ...');
+        url_yes = '{{ url_for('show_change_setting', album=album, setting='require_authentication', value='yes') }}';
+        url_no = '{{ url_for('show_change_setting', album=album, setting='require_authentication', value='no') }}';
+        url = (value == 'yes') ? url_yes : url_no;
+        result = $.getJSON(url, false, function() {
+            img = (value == 'yes') ? '{{ url_for('static_files', filename='on.png') }}' : '{{ url_for('static_files', filename='off.png') }}';
+            new_text = '<img src="' + img + '">';
+            new_value = (value == 'yes') ? 'no' : 'yes';
+            done_html = '<a href="#" onclick=\'return show_toggle_require_auth("' + element + '", "' + new_value + '");\'>' + new_text + '</a>';
+            $(element).html(done_html);
+        });
+        return false;
+    }
 </script>
 {% endblock %}
 
@@ -72,7 +87,16 @@
 
         <div class="sidebar">
             <ul>
-                <li><a href="{{ url_for('show_edit_users', album=album) }}">Edit authentication settings</a></li>
+                <li>authentication required:
+                    <span id="toggle_show">
+                        {% if show.get_setting('require_authentication') != 'no' %}
+                        <a href="#" onclick="return show_toggle_require_auth('#toggle_show', 'no')"><img src="{{ url_for('static_files', filename='on.png') }}" alt="disable"></a>
+                        {% else %}
+                        <a href="#" onclick="return show_toggle_require_auth('#toggle_show', 'yes')"><img src="{{ url_for('static_files', filename='off.png') }}" alt="disable"></a>
+                        {% endif %}
+                    </span>
+                </li>
+                <li><a href="{{ url_for('show_edit_users', album=album) }}">Edit users</a></li>
                 <li><a href="#" onclick='rotate_all_images(0);return false;'>Rotate all images based on exif info</a></li>
                 <li><a href="{{ url_for('add_all_images_to_show', album=album) }}">Add all images to show</a></li>
                 <li><a href="{{ url_for('sort_show_by_exifdate', album=album) }}">Sort show by exifdate</a></li>
