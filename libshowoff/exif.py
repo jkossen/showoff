@@ -111,9 +111,10 @@ def update_exif(app, album, filename):
         return
 
     ret = {}
-    for tag, value in exif.items():
-        decoded = TAGS.get(tag, tag)
-        ret[decoded] = value
+    if exif:
+        for tag, value in exif.items():
+            decoded = TAGS.get(tag, tag)
+            ret[decoded] = value
     f = open(exiffile, 'w')
     for key in supported_exiftags:
         if ret.has_key(key):
