@@ -56,6 +56,7 @@ def themed(template):
 
 def _paginated_overview(album, page, endpoint='list', template='grid'):
     controller = PageController(app)
+    show = Show(app, album)
     files = os.listdir(os.path.join(app.config['ALBUMS_DIR'], album))
 
     ext = re.compile(".jpg$", re.IGNORECASE)
@@ -66,7 +67,7 @@ def _paginated_overview(album, page, endpoint='list', template='grid'):
 
     files.sort()
 
-    return controller.act('paginated_overview', album=album, page=page,
+    return controller.act('paginated_overview', album=album, show=show, page=page,
                           files=files, endpoint=endpoint, template=template)
 
 def _rotate_image(album, filename, steps=1):
