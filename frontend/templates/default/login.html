@@ -1,0 +1,40 @@
+{% extends "default/layout.html" %}
+{% block extratitle %}Login - {% endblock %}
+{% block extrahead %}
+<link rel="stylesheet" href="{{ url_for('frontend.static_files', filename='galleriffic/css/basic.css') }}" type="text/css" />
+<link rel="stylesheet" href="{{ url_for('frontend.static_files', filename='galleriffic/css/galleriffic-5.css') }}" type="text/css" />
+<link rel="stylesheet" href="{{ url_for('frontend.static_files', filename='galleriffic/css/black.css') }}" type="text/css" />
+{% endblock %}
+
+{% block body %}
+<div id="page">
+    <div id="container">
+        <h1>Login</h1>
+        <h3>This album requires a valid user</h3>
+        <form action="{{ url_for('frontend.login', album=album) }}" method=post>
+            {{ form.csrf }}
+            <table>
+                <tr><td>{{ form.username.label }}</td>
+                    <td>{{ form.username }}
+                        {% if form.username.errors %}
+                        <ul class="errors">
+                            {% for error in form.username.errors %}<li>{{ error }}</li>{% endfor %}
+                        </ul>
+                        {% endif %}
+                </td></tr>
+                <tr><td>{{ form.password.label }}</td>
+                    <td>
+                        {{ form.password }}
+                        {% if form.password.errors %}
+                        <ul class="errors">
+                            {% for error in form.password.errors %}<li>{{ error }}</li>{% endfor %}
+                        </ul>
+                        {% endif %}
+                </td></tr>
+            </table>
+            <input type="submit" value="Login">
+        </form>
+    </div>
+</div>
+{% endblock %}
+

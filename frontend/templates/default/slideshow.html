@@ -1,0 +1,51 @@
+{% extends "default/layout.html" %}
+
+{% block extrahead %}
+<link rel="stylesheet" href="{{ url_for('frontend.static_files', filename='galleriffic/css/basic.css') }}" type="text/css" />
+<link rel="stylesheet" href="{{ url_for('frontend.static_files', filename='galleriffic/css/galleriffic-5.css') }}" type="text/css" />
+<link rel="stylesheet" href="{{ url_for('frontend.static_files', filename='galleriffic/css/black.css') }}" type="text/css" />
+<link rel="stylesheet" type="text/css" href="{{ url_for('frontend.static_files', filename='slideshow/css/slideshow.css') }}" media="screen" />
+<script src="{{ url_for('frontend.static_files', filename='slideshow/js/mootools.js') }}"></script>
+<script src="{{ url_for('frontend.static_files', filename='slideshow/js/slideshow.js') }}"></script>
+<script src="{{ url_for('frontend.static_files', filename='slideshow/js/slideshow.kenburns.js') }}"></script>
+<script>
+    window.addEvent('domready', function(){
+    var images = {
+    {% for file in files %}'{{ url_for('frontend.get_image', album=album, filename=file, size=1024) }}': { 'caption': '{{ file }}', href: '{{ url_for('frontend.image_page', album=album, filename=file) }}' }{% if not loop.last %},{% endif %}{% endfor %}
+    };
+    var myShow = new Slideshow.KenBurns('show', images, { captions: true, controller: true, resize: false, delay: 5000, duration: 2000, hu: '', linked: true });
+    });
+</script>
+<style>
+.slideshow-images {
+    width: 800px;
+    height: 600px;
+}
+.slideshow {
+    width: 800px;
+    height: 600px;
+}
+</style>
+{% endblock %}
+
+{% block title %}{{ album }} page {{ paginator.page }} of {{ paginator.pages }}{% endblock %}
+
+{% block body %}
+<div id="page">
+    <div id="container">
+        <h1><a href="{{ url_for('frontend.show_album', album=album) }}">{{ album }}</a></h1>
+ {% for message in get_flashed_messages() %}
+<div class="flash">{{ message }}</div>
+{% endfor %}
+
+<p>
+</p>
+
+{% include "default/_paginator.html" %}
+
+<div id="show" class="slideshow">
+    <img src="{{ url_for('frontend.get_image', album=album, filename=files[0], size=800) }}" width="800" height="600" />
+</div>
+</div>
+</div>
+{% endblock %}
