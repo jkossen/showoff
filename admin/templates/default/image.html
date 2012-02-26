@@ -1,0 +1,53 @@
+{% extends "default/layout.html" %}
+
+{% block title %}{{ config.TITLE }} - {{ filename }}{% endblock %}
+
+{% block body %}
+<h1><a href="{{ url_for('admin.show_album', album=album) }}">{{ album }}</a></h1>
+<h2>{{ filename }}</h2>
+{% for message in get_flashed_messages() %}
+<div class="flash">{{ message }}</div>
+{% endfor %}
+
+<p>Download image in sizes:
+{% for size in config.ALLOWED_SIZES %}
+{% if size != 'full' %}
+<a href="{{ url_for('admin.show_image', album=album, size=size, filename=filename) }}">{{ size }}</a>
+{% else %}
+<a href="{{ url_for('admin.show_image_full', album=album, filename=filename) }}">{{ size }}</a>
+{% endif %}
+{% if not loop.last %}
+|
+{% endif %}
+{% endfor %}
+<br />Actions:
+{% if filename in show.data['files'] %}
+<a href="{{ url_for('admin.remove_image_from_show', album=album, filename=filename) }}">remove from show</a>
+{% else %}
+<a href="{{ url_for('admin.add_image_to_show', album=album, filename=filename) }}">add to show</a>
+{% endif %}
+rotate clockwise:
+<a href="#" onclick='rotate("{{ url_for("image_rotate", album=album, filename=filename, steps=1) }}");return false;'>¼</a> &raquo;
+<a href="#" onclick='rotate("{{ url_for("image_rotate", album=album, filename=filename, steps=2) }}");return false;'>½</a> &raquo;
+<a href="#" onclick='rotate("{{ url_for("image_rotate", album=album, filename=filename, steps=3) }}");return false;'>¾</a>
+</p>
+
+<img src="{{ url_for('admin.show_image', album=album, filename=filename, size=config.IMAGE_SIZE) }}" alt="{{ filename }}" />
+
+<h3>Exif information</h3>
+{{ exif|exif_table|safe }}
+
+<script type="text/javascript">
+rotate = function(url) {
+    $.blockUI({ message: '<h1><img src="{{ url_for('admin.static_files', filename='galleriffic/css/loader.gif') }}" style="vertical-align:middle;" /> Rotating image ...</h1>'});
+    $.ajax({
+        url: url,
+        context: document.body,
+        success: function() {
+            window.location.reload();
+        }
+        });
+}
+</script>
+
+{% endblock %}

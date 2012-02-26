@@ -1,0 +1,85 @@
+body            { font-family: sans-serif; background: #000; color: #fff; font-size: 12px; margin-left: 2%; margin-right:2%; }
+a, h1, h2       { color: #ff7700; }
+h1, h2          { font-family: 'Verdana', sans-serif; margin: 0; }
+h1              { border-bottom: 2px solid #eee; font-size: 24px; line-height: 36px; margin-bottom: 5px; }
+h2              { font-size: 1.2em; }
+img { border: 0px; }
+th { text-align: left; }
+td { vertical-align: top; }
+
+h1 a { text-decoration: none; }
+.entries        { list-style: none; margin: 0; padding: 0; }
+.entries li     { margin: 0.8em 1.2em; }
+.entries li h2  { margin-left: -1em; }
+.add-entry      { font-size: 0.9em; border-bottom: 1px solid #ccc; }
+.add-entry dl   { font-weight: bold; }
+.metanav        { text-align: right; font-size: 0.8em; padding: 0.3em;
+                  margin-bottom: 1em; background: #fafafa; }
+.flash          { background: #CEE5F5; padding: 0.5em;
+                  border: 1px solid #AACBE2; }
+.error          { background: #F0D6D6; padding: 0.5em; }
+
+.image { float: left; padding: 5px; }
+
+.spacer { clear: both; }
+
+.paginator { background-color: #404040; color: #bbbbbb; padding: 3px; margin-bottom: 5px; font-weight: bold; }
+
+a.selected {
+    background-color:#1F75CC;
+    color:white;
+    z-index:100;
+}
+
+.messagepop {
+    background-color:#FFFFFF;
+    border:1px solid #999999;
+    cursor:default;
+    display:none;
+    margin-top: 15px;
+    position:absolute;
+    text-align:left;
+    width:394px;
+    z-index:50;
+    padding: 25px 25px 20px;
+}
+
+label {
+    display: block;
+    margin-bottom: 3px;
+    padding-left: 15px;
+    text-indent: -15px;
+}
+
+.messagepop p, .messagepop.div {
+    border-bottom: 1px solid #EFEFEF;
+    margin: 8px 0;
+    padding-bottom: 8px;
+}
+
+#select-for-show img {
+    clear:both;
+    padding-top: 10px;
+    vertical-align: middle;
+}
+
+.sidebar {
+    color: #ff7700;
+    width: 14%;
+    float:left;
+    line-height: 18px;
+}
+
+.grid-container {
+    width: 84%;
+    float:left;
+}
+
+.grid-item {
+    float:left;
+    padding:10px;
+}
+
+.grid-item-image {
+    float: left;
+}
