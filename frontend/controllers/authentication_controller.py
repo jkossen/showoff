@@ -1,7 +1,7 @@
 from controller import Controller
 from flask import render_template, abort, request, session
 from libshowoff import Show
-from forms import LoginForm
+from frontend.forms import LoginForm
 import os
 
 class AuthenticationController(Controller):
