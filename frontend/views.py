@@ -89,8 +89,7 @@ def login(album):
 @frontend.route('/static_files/<path:filename>')
 def static_files(filename):
     """Send static files such as style sheets, JavaScript, etc."""
-    static_path = os.path.join(current_app.root_path, 'templates', 'viewer',
-                               current_app.config['THEME'], 'static')
+    static_path = os.path.join(frontend.root_path, 'templates', current_app.config['THEME'], 'static')
     return send_from_directory(static_path, filename)
 
 @frontend.route('/image/<album>/<filename>/<size>/')
