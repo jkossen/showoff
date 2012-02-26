@@ -80,9 +80,9 @@ toggle_show = function(element, url, add) {
                         </div>
                         <div class="image-desc">
                             rotate clockwise:<br />
-                            <a href="#" onclick='rotate("{{ url_for("admin.image_rotate", album=album, filename=filename, steps=1) }}");return false;'>¼</a> &raquo;
-                            <a href="#" onclick='rotate("{{ url_for("admin.image_rotate", album=album, filename=filename, steps=2) }}");return false;'>½</a> &raquo;
-                            <a href="#" onclick='rotate("{{ url_for("admin.image_rotate", album=album, filename=filename, steps=3) }}");return false;'>¾</a>
+                            <a href="#" onclick='rotate("{{ url_for('admin.image_rotate', album=album, filename=filename, steps=1) }}");return false;'>¼</a> &raquo;
+                            <a href="#" onclick='rotate("{{ url_for('admin.image_rotate', album=album, filename=filename, steps=2) }}");return false;'>½</a> &raquo;
+                            <a href="#" onclick='rotate("{{ url_for('admin.image_rotate', album=album, filename=filename, steps=3) }}");return false;'>¾</a>
                         </div>
                         <div class="image-desc">
                             <a href="#" onclick='rotate_all_images(0);return false;'>rotate all images based on exif info</a>
