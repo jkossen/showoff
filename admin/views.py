@@ -68,7 +68,7 @@ def _rotate_image(album, filename, steps=1):
         if size != 'full':
             clear_cache(admin, album, filename, size)
 
-#@current_app.template_filter('exif_table')
+@admin.app_template_filter('exif_table')
 def get_exif_table(exif):
     table = '<table>'
     for line in exif:

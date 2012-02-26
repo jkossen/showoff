@@ -67,7 +67,7 @@ def login_required(f):
         return f(album, *args, **kwargs)
     return decorated_function
 
-#@app.template_filter('exif_table')
+@frontend.app_template_filter('exif_table')
 def get_exif_table(exif):
     table = '<table>'
     for line in exif:
