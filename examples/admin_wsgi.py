@@ -1,1 +1,1 @@
-from admin import app as application
+from run_admin import app as application
