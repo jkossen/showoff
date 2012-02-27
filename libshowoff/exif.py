@@ -120,6 +120,7 @@ def update_exif(app, album, filename):
         if ret.has_key(key):
             f.write("%s|%s\n" % (key, ret[key]))
     f.close()
+    return ret
 # }}}
 
 def get_exif(app, album, filename):
@@ -130,9 +131,13 @@ def get_exif(app, album, filename):
 
     if os.path.exists(exiffile):
         f = open(exiffile)
-        for line in f.readline():
-            exif[line.split('|')[0]] = line.split('|')[1]
+        for line in f.readlines():
+            line_arr = line.split('|')
+            if len(line_arr) > 1:
+                exif[line_arr[0]] = line_arr[1]
         f.close()
+    else:
+        exif = update_exif()
 
     return exif
 
