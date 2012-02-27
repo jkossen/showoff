@@ -1,5 +1,5 @@
 from flask import Flask
-from admin.views import admin
+from admin.controllers import admin
 
 app = Flask(__name__)
 app.config.from_pyfile('config.py')
