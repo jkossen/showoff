@@ -31,53 +31,18 @@ IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 """
 
-from flask import Blueprint, current_app, Flask, render_template, send_from_directory, abort, url_for, redirect, json, jsonify, request
-from libshowoff import Show, Paginator, supported_exiftags, clear_cache, update_cache, update_exif, is_edited, get_edit_or_original, get_exif, rotate_image
-from ExifTags import TAGS
+from flask import Blueprint, current_app, render_template, send_from_directory, url_for, redirect, jsonify, request
+from libshowoff import Show, get_exif
+from .lib.image import _image_rotate, image_rotate_exif, image_retrieve
+from .lib.page import _paginated_overview
 
-import os, re, Image
+import os, re
 
 admin = Blueprint('admin', __name__, template_folder='templates')
 
-def themed(template):
-    """Return path to template in configured theme"""
-    return os.path.join(current_app.config.get('THEME'), template)
-
-def _paginated_overview(album, page, endpoint='admin.list', template='grid'):
-    show = Show(current_app, album)
-    files = os.listdir(os.path.join(current_app.config['ALBUMS_DIR'], album))
-
-    ext = re.compile(".jpg$", re.IGNORECASE)
-    files = filter(ext.search, files)
-
-    if len(files) == 0:
-        abort(404)
-
-    files.sort()
-
-    ext = re.compile(".jpg$", re.IGNORECASE)
-    all_files = os.listdir(os.path.join(current_app.config['ALBUMS_DIR'], album))
-    all_files = filter(ext.search, all_files)
-    all_files.sort()
-
-    p = Paginator(album, files, current_app.config['THUMBNAILS_PER_PAGE'], page, endpoint, template)
-    return render_template(themed(template + '.html'), album=album,
-                              show=show, files=p.entries, paginator=p, page=page,
-                              all_files=all_files)
-
-def _rotate_image(album, filename, steps=1):
-    rotate_image(admin, album, filename, steps)
-    for size in current_app.config['ALLOWED_SIZES']:
-        if size != 'full':
-            clear_cache(admin, album, filename, size)
-
-@admin.app_template_filter('exif_table')
-def get_exif_table(exif):
-    table = '<table>'
-    for line in exif:
-        table = table + '<tr><td>' + line.replace('|', '</td><td>') + '</td></tr>'
-    table = table + '</table>'
-    return table
+def render_themed(template, **options):
+    template_path = os.path.join(current_app.config['THEME'], template)
+    return render_template(template_path, **options)
 
 @admin.route('/static/<path:filename>')
 def static_files(filename):
@@ -87,42 +52,18 @@ def static_files(filename):
 
 @admin.route('/<album>/image/<filename>/<int:size>/')
 def show_image(album, filename, size=None):
-    if size == None or size == 'full':
-        return send_from_directory(get_edit_or_original(current_app, album, filename), filename)
-    else:
-        adir = os.path.join(current_app.config['CACHE_DIR'], album)
-
-        if not os.path.exists(adir):
-            os.mkdir(adir)
-
-        tdir = os.path.join(adir, str(int(size)))
-        if not os.path.exists(os.path.join(tdir, os.path.basename(filename))):
-            update_cache(current_app, album, filename, int(size))
-
-        exifdir = os.path.join(current_app.config['CACHE_DIR'], album, 'exif')
-        exiffile = os.path.join(exifdir, os.path.basename(filename) + '.exif')
-
-        if not os.path.exists(exiffile):
-            update_exif(current_app, album, filename)
-
-        return send_from_directory(tdir, filename)
+    return image_retrieve(current_app, album, filename, size)
 
 @admin.route('/<album>/image/<filename>/full/')
 def show_image_full(album, filename):
-    return show_image(album, filename)
+    return image_retrieve(current_app, album, filename)
 
 @admin.route('/<album>/show/<filename>')
 def image_page(album, filename):
     show = Show(current_app, album)
-    exifdir = os.path.join(current_app.config['CACHE_DIR'], album, 'exif')
-    exif_array = []
-    if os.path.exists(os.path.join(exifdir, filename + '.exif')):
-        f = open(os.path.join(exifdir, filename + '.exif'))
-        exif_array = f.readlines()
-        f.close()
-
-    return render_template(themed('image.html'), album=album, filename=filename,
-                              exif=exif_array, show=show)
+    exif_array = get_exif(current_app, album, filename)
+    return render_themed('image.html', album=album, filename=filename,
+                           exif=exif_array, show=show)
 
 @admin.route('/<album>/rotate_exif/')
 def rotate_url():
@@ -130,9 +71,19 @@ def rotate_url():
     pass
 
 @admin.route('/<album>/list/<template>/<int:page>/')
-@admin.route('<album>/list/<int:page>/')
+@admin.route('/<album>/list/<int:page>/')
 def list(album, page, template='grid'):
-    return _paginated_overview(album, page, 'admin.list', template)
+    show = Show(current_app, album)
+    ext = re.compile(".jpg$", re.IGNORECASE)
+
+    all_files = os.listdir(os.path.join(current_app.config['ALBUMS_DIR'], album))
+    all_files = filter(ext.search, all_files)
+    all_files.sort()
+
+    p = _paginated_overview(current_app, album, page, 'admin.list', template)
+    return render_themed(template + '.html', album=album,
+                         show=show, files=p.entries, paginator=p, page=page,
+                         all_files=all_files)
 
 @admin.route('/<album>/')
 def show_album(album):
@@ -143,27 +94,16 @@ def show_index():
     dir_list = os.listdir(current_app.config['ALBUMS_DIR'])
     album_list = [os.path.basename(album) for album in dir_list]
     album_list.sort(reverse=True)
-    return render_template(themed('index.html'), albums=album_list)
+    return render_themed('index.html', albums=album_list)
 
 @admin.route('/<album>/rotate/<int:steps>/<filename>/')
 def image_rotate(album, filename, steps=1):
-    _rotate_image(album, filename, steps)
+    _image_rotate(album, filename, steps)
     return jsonify(result='OK')
 
 @admin.route('/<album>/rotate_exif/<filename>/')
 def exif_rotate_image(album, filename):
-    orientation_steps = { 3: 2, 6: 1, 8: 3 }
-    if not is_edited(admin, album, filename):
-        img = Image.open(os.path.join(current_app.config['ALBUMS_DIR'], album, filename))
-        exif = img._getexif()
-        ret = {}
-        for tag, value in exif.items():
-            decoded = TAGS.get(tag, tag)
-            ret[decoded] = value
-        if ret.has_key('Orientation'):
-            orientation = int(ret['Orientation'])
-            if orientation_steps.has_key(orientation):
-                _rotate_image(album, filename, orientation_steps[orientation])
+    image_rotate_exif(current_app, album, filename)
     return jsonify(result='OK')
 
 @admin.route('/<album>/add_image_to_show/<filename>/')
@@ -193,7 +133,7 @@ def sort_show_by_exifdate(album):
 def show_edit_users(album):
     show = Show(current_app, album)
     users = show.data['users']
-    return render_template(themed('edit_users.html'), album=album, show=show, users=users)
+    return render_themed('edit_users.html', album=album, show=show, users=users)
 
 @admin.route('/<album>/add_all/')
 def add_all_images_to_show(album):
