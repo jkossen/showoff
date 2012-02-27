@@ -34,7 +34,6 @@ This is the admin adminlication code for showoff.
 """
 
 from flask import Blueprint, current_app, Flask, render_template, send_from_directory, abort, url_for, redirect, json, jsonify, request
-from controllers import PageController, ImageController
 from libshowoff import Show, Paginator, supported_exiftags, clear_cache, update_cache, update_exif, is_edited, get_edit_or_original, get_exif, rotate_image
 from ExifTags import TAGS
 
@@ -47,7 +46,6 @@ def themed(template):
     return os.path.join(current_app.config.get('THEME'), template)
 
 def _paginated_overview(album, page, endpoint='admin.list', template='grid'):
-    controller = PageController(current_app)
     show = Show(current_app, album)
     files = os.listdir(os.path.join(current_app.config['ALBUMS_DIR'], album))
 
@@ -59,8 +57,15 @@ def _paginated_overview(album, page, endpoint='admin.list', template='grid'):
 
     files.sort()
 
-    return controller.act('paginated_overview', album=album, show=show, page=page,
-                          files=files, endpoint=endpoint, template=template)
+    ext = re.compile(".jpg$", re.IGNORECASE)
+    all_files = os.listdir(os.path.join(current_app.config['ALBUMS_DIR'], album))
+    all_files = filter(ext.search, all_files)
+    all_files.sort()
+
+    p = Paginator(album, files, current_app.config['THUMBNAILS_PER_PAGE'], page, endpoint, template)
+    return render_template(themed(template + '.html'), album=album,
+                              show=show, files=p.entries, paginator=p, page=page,
+                              all_files=all_files)
 
 def _rotate_image(album, filename, steps=1):
     rotate_image(admin, album, filename, steps)
@@ -84,8 +89,25 @@ def static_files(filename):
 
 @admin.route('/<album>/image/<filename>/<int:size>/')
 def show_image(album, filename, size=None):
-    controller = ImageController(current_app)
-    return controller.act('get', album, filename, size)
+    if size == None or size == 'full':
+        return send_from_directory(get_edit_or_original(current_app, album, filename), filename)
+    else:
+        adir = os.path.join(current_app.config['CACHE_DIR'], album)
+
+        if not os.path.exists(adir):
+            os.mkdir(adir)
+
+        tdir = os.path.join(adir, str(int(size)))
+        if not os.path.exists(os.path.join(tdir, os.path.basename(filename))):
+            update_cache(current_app, album, filename, int(size))
+
+        exifdir = os.path.join(current_app.config['CACHE_DIR'], album, 'exif')
+        exiffile = os.path.join(exifdir, os.path.basename(filename) + '.exif')
+
+        if not os.path.exists(exiffile):
+            update_exif(current_app, album, filename)
+
+        return send_from_directory(tdir, filename)
 
 @admin.route('/<album>/image/<filename>/full/')
 def show_image_full(album, filename):
@@ -93,8 +115,16 @@ def show_image_full(album, filename):
 
 @admin.route('/<album>/show/<filename>')
 def image_page(album, filename):
-    controller = PageController(current_app)
-    return controller.act('image_info', album, filename)
+    show = Show(current_app, album)
+    exifdir = os.path.join(current_app.config['CACHE_DIR'], album, 'exif')
+    exif_array = []
+    if os.path.exists(os.path.join(exifdir, filename + '.exif')):
+        f = open(os.path.join(exifdir, filename + '.exif'))
+        exif_array = f.readlines()
+        f.close()
+
+    return render_template(themed('image.html'), album=album, filename=filename,
+                              exif=exif_array, show=show)
 
 @admin.route('/<album>/rotate_exif/')
 def rotate_url():
