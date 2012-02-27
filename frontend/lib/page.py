@@ -1,15 +1,11 @@
 from flask import render_template, abort, session
-from libshowoff import Show, Paginator
+from libshowoff import Show, Paginator, get_exif
 import os, re
 
 def image_info(app, album, filename, template='image.html'):
     show = Show(app, album)
     exifdir = os.path.join(app.config['CACHE_DIR'], album, 'exif')
-    exif_array = []
-    if os.path.exists(os.path.join(exifdir, filename + '.exif')):
-        f = open(os.path.join(exifdir, filename + '.exif'))
-        exif_array = f.readlines()
-        f.close()
+    exif_array = get_exif(app, album, filename)
 
     return render_themed(app, template, album=album, filename=filename,
                          exif=exif_array, show=show)

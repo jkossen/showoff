@@ -32,7 +32,12 @@
 <img src="{{ url_for('frontend.get_image', album=album, filename=filename, size=config.IMAGE_SIZE) }}" alt="{{ filename }}" />
 
 <h3>Exif information</h3>
-{{ exif|exif_table|safe}}
+<table>
+{% for key in exif.keys() %}
+<tr><td>{{ key }}</td><td> {{ exif[key] }}</td></tr>
+{% endfor %}
+</table>
+
 </div>
 </div>
 {% endblock %}
