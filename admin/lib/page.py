@@ -1,5 +1,5 @@
 from flask import abort, current_app
-from libshowoff import Paginator
+from showoff.lib import Paginator
 import os, re
 
 def _paginated_overview(album, page, endpoint='admin.list', template='grid'):

@@ -1,5 +1,5 @@
 from flask import current_app, send_from_directory
-from libshowoff import update_cache, update_exif, get_edit_or_original
+from showoff.lib import update_cache, update_exif, get_edit_or_original
 import os
 
 def image_retrieve(album, filename, size=None):

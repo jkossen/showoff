@@ -1,5 +1,5 @@
 from flask import current_app, render_template, abort, session
-from libshowoff import Show, Paginator, get_exif
+from showoff.lib import Show, Paginator, get_exif
 import os, re
 
 def render_themed(template, **options):

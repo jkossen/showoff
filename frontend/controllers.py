@@ -31,7 +31,7 @@ IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 """
 
 from flask import Blueprint, current_app, Flask, abort, render_template, send_from_directory, request, redirect, session, url_for
-from libshowoff import Show
+from showoff.lib import Show
 from .lib.authentication import login_required, authenticate
 from .lib.page import get_paginator, render_themed
 from .lib.image import image_retrieve

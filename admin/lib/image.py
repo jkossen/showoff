@@ -1,5 +1,5 @@
 from flask import current_app, send_from_directory
-from libshowoff import is_edited, clear_cache, update_cache, update_exif, rotate_image
+from showoff.lib import is_edited, clear_cache, update_cache, update_exif, rotate_image
 from ExifTags import TAGS
 import os, Image
 

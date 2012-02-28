@@ -32,7 +32,7 @@ IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 """
 
 from flask import Blueprint, current_app, render_template, send_from_directory, url_for, redirect, jsonify, request
-from libshowoff import Show, get_exif
+from showoff.lib import Show, get_exif
 from .lib.image import _image_rotate, image_rotate_exif, image_retrieve
 from .lib.page import _paginated_overview
 

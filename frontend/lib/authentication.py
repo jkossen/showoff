@@ -1,7 +1,6 @@
 from flask import current_app, render_template, abort, request, session, url_for, redirect
-from libshowoff import Show
+from showoff.lib import Show
 from functools import wraps
-from libshowoff import Show
 from frontend.forms import LoginForm
 import os
 
