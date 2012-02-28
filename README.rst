@@ -1,6 +1,6 @@
-============================================
-Showoff - Lightweight webbased image gallery
-============================================
+===================================
+Showoff - Webbased photo management
+===================================
 :Author: Jochem Kossen
 
 Showoff is a webbased image gallery and photo directory management system,
