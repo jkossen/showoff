@@ -3,15 +3,16 @@ Showoff - Lightweight webbased image gallery
 ============================================
 :Author: Jochem Kossen
 
-Showoff is a webbased image gallery, written in Python_, utilizing Flask_ and
-for the interface a slightly modified Galleriffic_, a JQuery_ plugin.
+Showoff is a webbased image gallery and photo directory management system,
+written in Python_, utilizing Flask_ and for the interface a slightly modified
+Galleriffic_, a JQuery_ plugin.
 
 For a live demo of the viewer app, see http://jkossen.nl/showoff/public.html
 
 Copyright and license
 ---------------------
 
-:copyright: (c) 2010-2011 by Jochem Kossen <jochem.kossen@gmail.com>
+:copyright: (c) 2010-2012 by Jochem Kossen <jochem.kossen@gmail.com>
 :license: two-clause BSD
 
 Redistribution and use in source and binary forms, with or without
@@ -41,17 +42,17 @@ IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 Showoff features and lack thereof
 ----------------------------------
 
+* Non-destructive: Showoff does not change original files
+
 * Image rotation based on exif data
 
 * Image albums are just directories with image files, showoff will find and
   generate the required metadata for you.
 
-* You can use the admin to select which photo's should be selected for the
+* You can use the admin to select which photo's should be published in the
   "show" which is the publicly visible album
 
-* Separate viewer (frontend / public) and admin apps
-
-* Does not change original files
+* Separate frontend and admin apps
 
 * No database is used (everything is in flat-file or json files)
 
@@ -66,6 +67,8 @@ Showoff requires the following software:
 
 * `Python`_ (developed with 2.5 provided with Debian Lenny)
 * `Flask`_
+* Flask-WTF
+* py_brypt
 * `Werkzeug`_
 * `Jinja2`_
 
