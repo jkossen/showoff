@@ -1,16 +1,16 @@
-from flask import render_template, abort, request, session
+from flask import current_app, render_template, abort, request, session
 from libshowoff import Show
 from frontend.forms import LoginForm
 import os
 
-def authenticate(app, album):
+def authenticate(album):
     """Check user credentials and initialize session"""
-    show = Show(app, album)
+    show = Show(album)
 
     if request.method == 'POST':
         form = LoginForm(request.form)
         if form.validate():
-            if show.check_auth(request.form['username'], app.config['SECRET_KEY'], request.form['password']):
+            if show.check_auth(request.form['username'], current_app.config['SECRET_KEY'], request.form['password']):
                 next_url = None
                 if session.has_key('next_url'):
                     next_url = session['next_url']

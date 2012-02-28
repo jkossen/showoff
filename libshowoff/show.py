@@ -1,12 +1,11 @@
-from flask import session
+from flask import current_app, session
 from authentication import encrypt_password, validate_password
 import os, re, json
 
 class Show(object):
-    def __init__(self, app, album):
-        self.app = app
+    def __init__(self, album):
         self.album = album
-        self.show_dir = os.path.join(app.config['SHOWS_DIR'], album)
+        self.show_dir = os.path.join(current_app.config['SHOWS_DIR'], album)
         self.show_file = os.path.join(self.show_dir, 'show.json')
         self.data = {'files': [], 'settings': {}, 'users': {}}
         self.valid_settings = [
@@ -52,7 +51,6 @@ class Show(object):
         return False
 
     def change_setting(self, setting, value):
-        self.app.logger.debug('show.change_setting %s %s' % (setting, value))
         if setting in self.valid_settings:
             self.data['settings'][setting] = value
             return True
@@ -73,14 +71,14 @@ class Show(object):
     def sort_by_exif_datetime(self):
         filenames = []
         for filename in self.data['files']:
-            datetime = get_exif_datetime(self.app, self.album, filename)
+            datetime = get_exif_datetime(current_app, self.album, filename)
             filenames.append((datetime, filename))
         self.data['files'] = [v for (k, v) in sorted(filenames)]
         return self.save()
 
     def add_all_images(self):
         """Add all images in album to the show"""
-        files = os.listdir(os.path.join(self.app.config['ALBUMS_DIR'], self.album))
+        files = os.listdir(os.path.join(current_app.config['ALBUMS_DIR'], self.album))
 
         # only list .jpg files
         ext = re.compile(".jpg$", re.IGNORECASE)

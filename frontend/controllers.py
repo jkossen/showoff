@@ -38,39 +38,27 @@ from flask import Blueprint, current_app, Flask, abort, render_template, send_fr
 from functools import wraps
 from libshowoff import Show
 from .lib.authentication import authenticate
-from .lib.page import get_nonpaginated_show, get_show, image_info
+from .lib.page import get_paginator, render_themed
 from .lib.image import image_retrieve
 from forms import LoginForm
 import os
 
 frontend = Blueprint('frontend', __name__, template_folder='templates')
 
-def render_themed(template, **options):
-    template_path = os.path.join(current_app.config['THEME'], template)
-    return render_template(template_path, **options)
-
 def login_required(f):
     @wraps(f)
     def decorated_function(album, *args, **kwargs):
-        show = Show(current_app, album)
+        show = Show(album)
         if show.need_authentication():
             session['next_url'] = request.url
             return redirect(url_for('frontend.login', album=album))
         return f(album, *args, **kwargs)
     return decorated_function
 
-@frontend.app_template_filter('exif_table')
-def get_exif_table(exif):
-    table = '<table>'
-    for line in exif:
-        table = table + '<tr><td>' + line.replace('|', '</td><td>') + '</td></tr>'
-    table = table + '</table>'
-    return table
-
 @frontend.route('/login/<album>', methods=['GET', 'POST'])
 def login(album):
     if request.method == 'POST':
-        if authenticate(current_app, album):
+        if authenticate(album):
             if session.has_key('next_url') and session['next_url'] is not None and session['next_url'] != url_for('frontend.login', album=album):
                 next_url = session['next_url']
                 session.pop('next_url', None)
@@ -87,31 +75,46 @@ def static_files(filename):
 @frontend.route('/image/<album>/<filename>/<size>/')
 @login_required
 def get_image(album, filename, size=None):
-    return image_retrieve(current_app, album, filename, size)
+    return image_retrieve(album, filename, size)
 
 @frontend.route('/page/<album>/<filename>.html')
 @login_required
 def image_page(album, filename):
-    return image_info(current_app, album, filename)
+    show = Show(album)
+    exifdir = os.path.join(current_app.config['CACHE_DIR'], album, 'exif')
+    exif_array = get_exif(album, filename)
+
+    return render_themed(template, album=album, filename=filename,
+                         exif=exif_array, show=show)
 
 @frontend.route('/list/<album>/<template>/<int:page>.html')
 @frontend.route('/list/<album>/<int:page>.html')
 @login_required
 def list(album, page, template='list'):
     if template in current_app.config['FRONTEND_LIST_TEMPLATES']:
-        return get_show(current_app, album, page, 'frontend.list', template)
+        show = Show(album)
+        paginator = get_paginator(album, page, 'frontend.list', template)
+        return render_themed(template + '.html', album=album,
+                             show=show, files=paginator.entries, paginator=paginator, page=page)
     else:
         abort(404)
 
 @frontend.route('/fullshow/<album>/<template>.html')
 @login_required
 def show_nonpaginated(album, template='grid_full'):
-    return get_nonpaginated_show(current_app, album, template)
+    show = Show(album)
+
+    if len(show.data['files']) == 0:
+        abort(404)
+
+    files = show.data['files']
+    return render_themed(template + '.html', album=album, files=files)
 
 @frontend.route('/slideshow/<album>/<int:page>.html')
 @login_required
 def show_slideshow(album, page):
-    return slideshow(current_app, album, page, 'show_slideshow', 'slideshow.html')
+    paginator = get_paginator(album, page, 'frontend.show_slideshow', 'slideshow.html')
+    return render_themed('slideshow.html', album=album, files=p.entries, paginator=p, page=page)
 
 @frontend.route('/<album>.html')
 @login_required
@@ -126,7 +129,7 @@ def show_index():
     shows = {}
 
     for album in full_album_list:
-        show = Show(current_app, album)
+        show = Show(album)
         if show.is_enabled():
             shows[album] = show
 

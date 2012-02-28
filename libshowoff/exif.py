@@ -1,3 +1,4 @@
+from flask import current_app
 from ExifTags import TAGS
 import os, Image
 
@@ -99,12 +100,12 @@ supported_exiftags = [
     ]
 
 # update_exif {{{
-def update_exif(app, album, filename):
-    exifdir = os.path.join(app.config['CACHE_DIR'], album, 'exif')
+def update_exif(album, filename):
+    exifdir = os.path.join(current_app.config['CACHE_DIR'], album, 'exif')
     exiffile = os.path.join(exifdir, os.path.basename(filename) + '.exif')
     if not os.path.exists(exifdir):
         os.mkdir(exifdir)
-    img = Image.open(os.path.join(app.config['ALBUMS_DIR'], album, filename))
+    img = Image.open(os.path.join(current_app.config['ALBUMS_DIR'], album, filename))
     exif = img._getexif()
 
     if exif == None:
@@ -123,8 +124,8 @@ def update_exif(app, album, filename):
     return ret
 # }}}
 
-def get_exif(app, album, filename):
-    exifdir = os.path.join(app.config['CACHE_DIR'], album, 'exif')
+def get_exif(album, filename):
+    exifdir = os.path.join(current_app.config['CACHE_DIR'], album, 'exif')
     exiffile = os.path.join(exifdir, os.path.basename(filename) + '.exif')
 
     exif = {}

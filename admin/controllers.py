@@ -52,16 +52,16 @@ def static_files(filename):
 
 @admin.route('/<album>/image/<filename>/<int:size>/')
 def show_image(album, filename, size=None):
-    return image_retrieve(current_app, album, filename, size)
+    return image_retrieve(album, filename, size)
 
 @admin.route('/<album>/image/<filename>/full/')
 def show_image_full(album, filename):
-    return image_retrieve(current_app, album, filename)
+    return image_retrieve(album, filename)
 
 @admin.route('/<album>/show/<filename>')
 def image_page(album, filename):
-    show = Show(current_app, album)
-    exif_array = get_exif(current_app, album, filename)
+    show = Show(album)
+    exif_array = get_exif(album, filename)
     return render_themed('image.html', album=album, filename=filename,
                            exif=exif_array, show=show)
 
@@ -73,14 +73,14 @@ def rotate_url():
 @admin.route('/<album>/list/<template>/<int:page>/')
 @admin.route('/<album>/list/<int:page>/')
 def list(album, page, template='grid'):
-    show = Show(current_app, album)
+    show = Show(album)
     ext = re.compile(".jpg$", re.IGNORECASE)
 
     all_files = os.listdir(os.path.join(current_app.config['ALBUMS_DIR'], album))
     all_files = filter(ext.search, all_files)
     all_files.sort()
 
-    p = _paginated_overview(current_app, album, page, 'admin.list', template)
+    p = _paginated_overview(album, page, 'admin.list', template)
     return render_themed(template + '.html', album=album,
                          show=show, files=p.entries, paginator=p, page=page,
                          all_files=all_files)
@@ -103,13 +103,13 @@ def image_rotate(album, filename, steps=1):
 
 @admin.route('/<album>/rotate_exif/<filename>/')
 def exif_rotate_image(album, filename):
-    image_rotate_exif(current_app, album, filename)
+    image_rotate_exif(album, filename)
     return jsonify(result='OK')
 
 @admin.route('/<album>/add_image_to_show/<filename>/')
 def add_image_to_show(album, filename):
     """Add an image to the show"""
-    show = Show(current_app, album)
+    show = Show(album)
     if show.add_image(filename):
         return jsonify(result='OK')
     return jsonify(result='Failed')
@@ -117,7 +117,7 @@ def add_image_to_show(album, filename):
 @admin.route('/<album>/remove_image_from_show/<filename>/')
 def remove_image_from_show(album, filename):
     """Remove an image from the show"""
-    show = Show(current_app, album)
+    show = Show(album)
     if show.remove_image(filename):
         return jsonify(result='OK')
     return jsonify(result='Failed')
@@ -125,25 +125,25 @@ def remove_image_from_show(album, filename):
 @admin.route('/<album>/sort_by_exifdate/')
 def sort_show_by_exifdate(album):
     """Sort the show by exif datetime """
-    show = Show(current_app, album)
+    show = Show(album)
     show.sort_by_exif_datetime()
     return redirect(request.referrer or url_for('index'))
 
 @admin.route('/<album>/edit_users/')
 def show_edit_users(album):
-    show = Show(current_app, album)
+    show = Show(album)
     users = show.data['users']
     return render_themed('edit_users.html', album=album, show=show, users=users)
 
 @admin.route('/<album>/add_all/')
 def add_all_images_to_show(album):
-    show = Show(current_app, album)
+    show = Show(album)
     show.add_all_images()
     return redirect(request.referrer or url_for('index'))
 
 @admin.route('/<album>/set/<setting>/<value>/')
 def show_change_setting(album, setting, value):
-    show = Show(current_app, album)
+    show = Show(album)
     if (show.change_setting(setting, value) and show.save()):
         return jsonify(result='OK')
     else:
@@ -152,7 +152,7 @@ def show_change_setting(album, setting, value):
 @admin.route('/<album>/change_password/', methods=['POST'])
 def show_change_password(album):
     if request.method == 'POST':
-        show = Show(current_app, album)
+        show = Show(album)
         username = request.form['username']
         password = request.form['password']
         show.set_user(username, current_app.config['SECRET_KEY'], password)
@@ -163,7 +163,7 @@ def show_change_password(album):
 
 @admin.route('/<album>/remove_user/<username>/')
 def show_remove_user(album, username):
-    show = Show(current_app, album)
+    show = Show(album)
     show.remove_user(username)
     if (show.save()):
         return redirect(request.referrer or url_for('index'))

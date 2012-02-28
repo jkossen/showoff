@@ -1,9 +1,9 @@
-from flask import abort
+from flask import abort, current_app
 from libshowoff import Paginator
 import os, re
 
-def _paginated_overview(app, album, page, endpoint='admin.list', template='grid'):
-    files = os.listdir(os.path.join(app.config['ALBUMS_DIR'], album))
+def _paginated_overview(album, page, endpoint='admin.list', template='grid'):
+    files = os.listdir(os.path.join(current_app.config['ALBUMS_DIR'], album))
 
     ext = re.compile(".jpg$", re.IGNORECASE)
     files = filter(ext.search, files)
@@ -13,5 +13,5 @@ def _paginated_overview(app, album, page, endpoint='admin.list', template='grid'
 
     files.sort()
 
-    return Paginator(album, files, app.config['THUMBNAILS_PER_PAGE'], page, endpoint, template)
+    return Paginator(album, files, current_app.config['THUMBNAILS_PER_PAGE'], page, endpoint, template)
 
