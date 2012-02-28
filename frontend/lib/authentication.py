@@ -1,7 +1,19 @@
-from flask import current_app, render_template, abort, request, session
+from flask import current_app, render_template, abort, request, session, url_for, redirect
+from libshowoff import Show
+from functools import wraps
 from libshowoff import Show
 from frontend.forms import LoginForm
 import os
+
+def login_required(f):
+    @wraps(f)
+    def decorated_function(album, *args, **kwargs):
+        show = Show(album)
+        if show.need_authentication():
+            session['next_url'] = request.url
+            return redirect(url_for('frontend.login', album=album))
+        return f(album, *args, **kwargs)
+    return decorated_function
 
 def authenticate(album):
     """Check user credentials and initialize session"""

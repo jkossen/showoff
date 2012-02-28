@@ -4,7 +4,7 @@
 """
 Showoff - Webbased photo album software
 
-Copyright (c) 2010 by Jochem Kossen <jochem.kossen@gmail.com>
+Copyright (c) 2010-2012 by Jochem Kossen <jochem@jkossen.nl>
 
 Redistribution and use in source and binary forms, with or without
 modification, are permitted provided that the following conditions are
@@ -28,32 +28,17 @@ BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY,
 WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE
 OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN
 IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-
-This is the frontend application code for showoff. It's only used for
-viewing content, not manipulation.
-
 """
 
 from flask import Blueprint, current_app, Flask, abort, render_template, send_from_directory, request, redirect, session, url_for
-from functools import wraps
 from libshowoff import Show
-from .lib.authentication import authenticate
+from .lib.authentication import login_required, authenticate
 from .lib.page import get_paginator, render_themed
 from .lib.image import image_retrieve
 from forms import LoginForm
 import os
 
 frontend = Blueprint('frontend', __name__, template_folder='templates')
-
-def login_required(f):
-    @wraps(f)
-    def decorated_function(album, *args, **kwargs):
-        show = Show(album)
-        if show.need_authentication():
-            session['next_url'] = request.url
-            return redirect(url_for('frontend.login', album=album))
-        return f(album, *args, **kwargs)
-    return decorated_function
 
 @frontend.route('/login/<album>', methods=['GET', 'POST'])
 def login(album):
@@ -137,4 +122,3 @@ def show_index():
     album_list.sort(reverse=True)
 
     return render_themed('index.html', albums=album_list, shows=shows)
-
