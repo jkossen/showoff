@@ -12,7 +12,7 @@ For a live demo of the viewer app, see http://jkossen.nl/showoff/public.html
 Copyright and license
 ---------------------
 
-:copyright: (c) 2010-2012 by Jochem Kossen <jochem.kossen@gmail.com>
+:copyright: (c) 2010-2012 by Jochem Kossen <jochem@jkossen.nl>
 :license: two-clause BSD
 
 Redistribution and use in source and binary forms, with or without
