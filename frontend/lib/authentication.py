@@ -11,7 +11,7 @@ def login_required(f):
         show = Show(album)
         if show.need_authentication():
             session['next_url'] = request.url
-            return redirect(url_for('frontend.login', album=album))
+            return redirect(url_for('.login', album=album))
         return f(album, *args, **kwargs)
     return decorated_function
 

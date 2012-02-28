@@ -44,11 +44,11 @@ frontend = Blueprint('frontend', __name__, template_folder='templates')
 def login(album):
     if request.method == 'POST':
         if authenticate(album):
-            if session.has_key('next_url') and session['next_url'] is not None and session['next_url'] != url_for('frontend.login', album=album):
+            if session.has_key('next_url') and session['next_url'] is not None and session['next_url'] != url_for('.login', album=album):
                 next_url = session['next_url']
                 session.pop('next_url', None)
                 return redirect(next_url)
-            return redirect(url_for('frontend.show_album', album=album))
+            return redirect(url_for('.show_album', album=album))
     return render_themed('login.html', album=album, form=LoginForm())
 
 @frontend.route('/static_files/<path:filename>')

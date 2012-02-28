@@ -127,7 +127,7 @@ def sort_show_by_exifdate(album):
     """Sort the show by exif datetime """
     show = Show(album)
     show.sort_by_exif_datetime()
-    return redirect(request.referrer or url_for('index'))
+    return redirect(request.referrer or url_for('.index'))
 
 @admin.route('/<album>/edit_users/')
 def show_edit_users(album):
@@ -139,7 +139,7 @@ def show_edit_users(album):
 def add_all_images_to_show(album):
     show = Show(album)
     show.add_all_images()
-    return redirect(request.referrer or url_for('index'))
+    return redirect(request.referrer or url_for('.index'))
 
 @admin.route('/<album>/set/<setting>/<value>/')
 def show_change_setting(album, setting, value):
@@ -157,7 +157,7 @@ def show_change_password(album):
         password = request.form['password']
         show.set_user(username, current_app.config['SECRET_KEY'], password)
         if (show.save()):
-            return redirect(request.referrer or url_for('index'))
+            return redirect(request.referrer or url_for('.index'))
         else:
             return jsonify(result='Failed')
 
@@ -166,7 +166,7 @@ def show_remove_user(album, username):
     show = Show(album)
     show.remove_user(username)
     if (show.save()):
-        return redirect(request.referrer or url_for('index'))
+        return redirect(request.referrer or url_for('.index'))
     else:
         return jsonify(result='Failed')
 
