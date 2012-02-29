@@ -30,7 +30,7 @@ OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN
 IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 """
 
-from flask import Blueprint, current_app, Flask, abort, render_template, send_from_directory, request, redirect, session, url_for
+from flask import Blueprint, current_app, safe_join, Flask, abort, render_template, send_from_directory, request, redirect, session, url_for
 from showoff.lib import Show
 from .lib.authentication import login_required, authenticate
 from .lib.page import get_paginator, render_themed
