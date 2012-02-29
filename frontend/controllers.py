@@ -66,7 +66,7 @@ def get_image(album, filename, size=None):
 @login_required
 def image_page(album, filename):
     show = Show(album)
-    exifdir = os.path.join(current_app.config['CACHE_DIR'], album, 'exif')
+    exifdir = safe_join(current_app.config['CACHE_DIR'], os.path.join(album, 'exif'))
     exif_array = get_exif(album, filename)
 
     return render_themed(template, album=album, filename=filename,
