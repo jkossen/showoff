@@ -71,6 +71,7 @@ Showoff requires the following software:
 * py_bcrypt
 * `Werkzeug`_
 * `Jinja2`_
+* PIL
 
 If you use pip and virtualenv (highly recommended), you can simply install the
 dependencies with
