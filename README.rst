@@ -68,7 +68,7 @@ Showoff requires the following software:
 * `Python`_ (developed with 2.5 provided with Debian Lenny)
 * `Flask`_
 * Flask-WTF
-* py_brypt
+* py_bcrypt
 * `Werkzeug`_
 * `Jinja2`_
 
