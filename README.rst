@@ -72,6 +72,13 @@ Showoff requires the following software:
 * `Werkzeug`_
 * `Jinja2`_
 
+If you use pip and virtualenv (highly recommended), you can simply install the
+dependencies with
+
+::
+
+    $ pip install -r requirements.txt    
+
 Installation Instructions
 ~~~~~~~~~~~~~~~~~~~~~~~~~
 * Install the software listed under `Requirements`_
