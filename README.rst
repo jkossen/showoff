@@ -68,9 +68,17 @@ Showoff requires the following software:
 * `Python`_ (developed with 2.5 provided with Debian Lenny)
 * `Flask`_
 * Flask-WTF
-* py_brypt
+* py_bcrypt
 * `Werkzeug`_
 * `Jinja2`_
+* PIL
+
+If you use pip and virtualenv (highly recommended), you can simply install the
+dependencies with
+
+::
+
+    $ pip install -r requirements.txt    
 
 Installation Instructions
 ~~~~~~~~~~~~~~~~~~~~~~~~~
