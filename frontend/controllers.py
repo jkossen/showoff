@@ -35,7 +35,7 @@ from showoff.lib import Show
 from .lib.authentication import login_required, authenticate
 from .lib.page import get_paginator, render_themed
 from .lib.image import image_retrieve
-from forms import LoginForm
+from .forms import LoginForm
 import os
 
 frontend = Blueprint('frontend', __name__, template_folder='templates')
