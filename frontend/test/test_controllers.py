@@ -4,11 +4,10 @@ import py
 
 class TestControllers(object):
     def setup_method(self, method):
-        self.tmpdir = py.test.config.getbasetemp()
         self.app = Flask(__name__)
         self.app.register_blueprint(controllers.frontend)
         self.app.config.update({
-                'ALBUMS_DIR' : str(self.tmpdir.mkdir('albums')),
+                'ALBUMS_DIR' : str(py.test.ensuretemp('albums')),
                 'THEME' : 'default',
                 })
 
