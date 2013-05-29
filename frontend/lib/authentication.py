@@ -1,7 +1,7 @@
 from flask import current_app, render_template, abort, request, session, url_for, redirect
 from showoff.lib import Show
 from functools import wraps
-from frontend.forms import LoginForm
+from ..forms import LoginForm
 import os
 
 def login_required(f):

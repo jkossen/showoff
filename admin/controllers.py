@@ -44,7 +44,7 @@ def render_themed(template, **options):
     template_path = os.path.join(current_app.config['THEME'], template)
     return render_template(template_path, **options)
 
-@admin.route('/static/<path:filename>')
+@admin.route('/static_files/<path:filename>')
 def static_files(filename):
     """Send static files such as style sheets, JavaScript, etc."""
     static_path = os.path.join(admin.root_path, 'templates', current_app.config['THEME'], 'static')
@@ -72,7 +72,7 @@ def rotate_url():
 
 @admin.route('/<album>/list/<template>/<int:page>/')
 @admin.route('/<album>/list/<int:page>/')
-def list(album, page, template='grid'):
+def list_album(album, page, template='grid'):
     show = Show(album)
     ext = re.compile(".jpg$", re.IGNORECASE)
 
@@ -87,7 +87,7 @@ def list(album, page, template='grid'):
 
 @admin.route('/<album>/')
 def show_album(album):
-    return list(album, 1)
+    return list_album(album, 1)
 
 @admin.route('/')
 def show_index():

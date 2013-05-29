@@ -35,7 +35,7 @@ from showoff.lib import Show
 from .lib.authentication import login_required, authenticate
 from .lib.page import get_paginator, render_themed
 from .lib.image import image_retrieve
-from forms import LoginForm
+from .forms import LoginForm
 import os
 
 frontend = Blueprint('frontend', __name__, template_folder='templates')
@@ -75,7 +75,7 @@ def image_page(album, filename):
 @frontend.route('/list/<album>/<template>/<int:page>.html')
 @frontend.route('/list/<album>/<int:page>.html')
 @login_required
-def list(album, page, template='list'):
+def list_album(album, page, template='list'):
     if template in current_app.config['FRONTEND_LIST_TEMPLATES']:
         show = Show(album)
         paginator = get_paginator(album, page, 'frontend.list', template)
@@ -105,7 +105,7 @@ def show_slideshow(album, page):
 @login_required
 def show_album(album):
     """Render first page of album"""
-    return list(album, 1)
+    return list_album(album, 1)
 
 @frontend.route('/')
 def show_index():
