@@ -1,16 +1,26 @@
 from setuptools import setup
 
+# Utility function to read the README file.
+def read(fname):
+    return open(os.path.join(os.path.dirname(__file__), fname)).read()
+
 setup(
-        name='showoff',
-        version='0.3'
-        long_description=__doc__,
-        packages=['showoff'],
-        include_package_data=True,
-        zip_safe=False,
-        install_requires=[
-            'Flask==0.9',
-            'Flask-WTF==0.8',
-            'py-bcrypt==0.2',
-            'PIL==1.1.7'
-        ]
+    name='showoff',
+    version='0.3',
+    license='BSD',
+    description='Webbased image gallery and photo directory management',
+    long_description=read('README.rst'),
+    packages=['showoff'],
+    install_requires=[
+        'Flask==0.9',
+        'Flask-WTF==0.8',
+        'py-bcrypt==0.2',
+        'PIL==1.1.7'
+    ],
+    classifiers=[
+        "Development Status :: 3 - Alpha",
+        "Environment :: Web Environment",
+        "Topic :: Internet :: WWW/HTTP :: WSGI :: Application"
+        "License :: OSI Approved :: BSD License",
+    ],
 )
