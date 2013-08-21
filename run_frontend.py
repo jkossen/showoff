@@ -1,5 +1,5 @@
 from flask import Flask
-from frontend.controllers import frontend
+from showoff.frontend.controllers import frontend
 
 app = Flask(__name__)
 app.config.from_pyfile('config.py')
