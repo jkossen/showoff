@@ -78,7 +78,7 @@ def image_page(album, filename):
 def list_album(album, page, template='list'):
     if template in current_app.config['FRONTEND_LIST_TEMPLATES']:
         show = Show(album)
-        paginator = get_paginator(album, page, 'frontend.list', template)
+        paginator = get_paginator(album, page, 'frontend.list_album', template)
         return render_themed(template + '.html', album=album,
                              show=show, files=paginator.entries, paginator=paginator, page=page)
     else:
