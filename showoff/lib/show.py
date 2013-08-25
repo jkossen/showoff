@@ -1,5 +1,5 @@
 from flask import current_app, session
-from authentication import encrypt_password, validate_password
+from authentication import hash_password, validate_password
 import os, re, json
 
 class Show(object):
@@ -33,7 +33,7 @@ class Show(object):
         return True
 
     def set_user(self, username, seed, password):
-        self.data['users'][username] = encrypt_password(seed, password)
+        self.data['users'][username] = hash_password(seed, password)
 
     def remove_user(self, username):
         self.data['users'].pop(username)

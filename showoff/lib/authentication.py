@@ -1,10 +1,10 @@
 import os, bcrypt
 
-def encrypt_password(seed, password):
+def hash_password(seed, plaintext):
     """Encrypt given password using seed as an extra salt"""
-    return bcrypt.hashpw('%s%s' % (seed, password), bcrypt.gensalt())
+    return bcrypt.hashpw('%s%s' % (seed, plaintext), bcrypt.gensalt())
 
-def validate_password(seed, password, hash):
+def validate_password(seed, plaintext, hashed):
     """Validation function for blowfish encrypted password"""
-    return bcrypt.hashpw('%s%s' % (seed, password), hash) == hash
+    return bcrypt.hashpw('%s%s' % (seed, plaintext), hashed) == hashed
 

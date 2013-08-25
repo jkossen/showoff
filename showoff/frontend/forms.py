@@ -1,7 +1,8 @@
 # Imports {{{
-from flask.ext.wtf import Form, TextField, PasswordField, Required
+from wtforms import TextField, PasswordField, validators
+from flask.ext.wtf import Form
 # }}}
 
 class LoginForm(Form):
-    username = TextField('Username', validators=[Required(message='Username is required.')])
-    password = PasswordField('Password', validators=[Required(message='Password is required.')])
+    username = TextField('Username', validators=[validators.Required(message='Username is required.')])
+    password = PasswordField('Password', validators=[validators.Required(message='Password is required.')])

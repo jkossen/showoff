@@ -19,8 +19,8 @@ def authenticate(album):
     show = Show(album)
 
     if request.method == 'POST':
-        form = LoginForm(request.form)
-        if form.validate():
+        form = LoginForm()
+        if form.validate_on_submit():
             if show.check_auth(request.form['username'], current_app.config['SECRET_KEY'], request.form['password']):
                 next_url = None
                 if session.has_key('next_url'):
