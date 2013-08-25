@@ -73,12 +73,20 @@ Showoff requires the following software:
 * `Jinja2`_
 * PIL
 
-If you use pip and virtualenv (highly recommended), you can simply install the
-dependencies with
+Showoff comes with a setup.py installation script which uses setuptools.  The
+following command will install showoff and its dependencies:
+
+::
+    $ python setup.py install
+
+You can also use pip to install the dependencies, but then you need to register
+the showoff installation manually (add the path to the showoff parent dir to a
+file called showoff.pth inside your site-packages directory):
 
 ::
 
-    $ pip install -r requirements.txt    
+    $ pip install -r requirements.txt
+
 
 Installation Instructions
 ~~~~~~~~~~~~~~~~~~~~~~~~~
