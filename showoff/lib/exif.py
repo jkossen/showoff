@@ -138,7 +138,7 @@ def get_exif(album, filename):
                 exif[line_arr[0]] = line_arr[1]
         f.close()
     else:
-        exif = update_exif()
+        exif = update_exif(album, filename)
 
     return exif
 
