@@ -80,7 +80,7 @@ def list_album(album, page, template='grid'):
     all_files = filter(ext.search, all_files)
     all_files.sort()
 
-    p = _paginated_overview(album, page, 'admin.list', template)
+    p = _paginated_overview(album, page, 'admin.list_album', template)
     return render_themed(template + '.html', album=album,
                          show=show, files=p.entries, paginator=p, page=page,
                          all_files=all_files)
