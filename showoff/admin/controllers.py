@@ -4,7 +4,7 @@
 """
 Showoff - Webbased photo album software
 
-Copyright (c) 2010-2012 by Jochem Kossen <jochem@jkossen.nl>
+Copyright (c) 2010-2013 by Jochem Kossen <jochem@jkossen.nl>
 
 Redistribution and use in source and binary forms, with or without
 modification, are permitted provided that the following conditions are
