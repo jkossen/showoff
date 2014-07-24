@@ -7,7 +7,7 @@ def read(fname):
 
 setup(
     name = "showoff",
-    version = '0.3.1',
+    version = '0.3.2',
     author = "Jochem Kossen",
     author_email = "jochem@jkossen.nl",
     license="BSD",
@@ -16,10 +16,10 @@ setup(
     long_description=read('README.rst'),
     packages=["showoff"],
     install_requires=[
-        'Flask==0.10',
-        'Flask-WTF==0.9.1',
-        'py-bcrypt==0.4',
-        'PIL==1.1.7'
+        'Flask>=0.10.1',
+        'Flask-WTF>=0.9.5',
+        'py-bcrypt>=0.4',
+        'pillow>=2.5.1'
     ],
     classifiers=[
         "Development Status :: 3 - Alpha",
