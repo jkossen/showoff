@@ -1,7 +1,7 @@
 from flask import current_app, send_from_directory
-from showoff.lib import is_edited, clear_cache, update_cache, update_exif, rotate_image
-from ExifTags import TAGS
-import os, Image
+from showoff.lib import is_edited, clear_cache, update_cache, update_exif, rotate_image, get_edit_or_original
+from PIL import ExifTags, Image
+import os
 
 def _image_rotate(album, filename, steps=1):
     rotate_image(album, filename, steps)
@@ -16,7 +16,7 @@ def image_rotate_exif(album, filename):
         exif = img._getexif()
         ret = {}
         for tag, value in exif.items():
-            decoded = TAGS.get(tag, tag)
+            decoded = ExifTags.TAGS.get(tag, tag)
             ret[decoded] = value
         if ret.has_key('Orientation'):
             orientation = int(ret['Orientation'])

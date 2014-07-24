@@ -31,7 +31,7 @@ IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 """
 
 from flask import Blueprint, current_app, safe_join, Flask, abort, render_template, send_from_directory, request, redirect, session, url_for
-from showoff.lib import Show
+from showoff.lib import Show, get_exif
 from .lib.authentication import login_required, authenticate
 from .lib.page import get_paginator, render_themed
 from .lib.image import image_retrieve
@@ -64,12 +64,12 @@ def get_image(album, filename, size=None):
 
 @frontend.route('/page/<album>/<filename>.html')
 @login_required
-def image_page(album, filename):
+def image_page(album, filename, template='image'):
     show = Show(album)
     exifdir = safe_join(current_app.config['CACHE_DIR'], os.path.join(album, 'exif'))
     exif_array = get_exif(album, filename)
 
-    return render_themed(template, album=album, filename=filename,
+    return render_themed(template + '.html', album=album, filename=filename,
                          exif=exif_array, show=show)
 
 @frontend.route('/list/<album>/<template>/<int:page>.html')
