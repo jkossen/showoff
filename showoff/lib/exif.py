@@ -1,6 +1,6 @@
 from flask import current_app
-from ExifTags import TAGS
-import os, Image
+from PIL import ExifTags, Image
+import os
 
 supported_exiftags = [
     "ImageWidth",
@@ -114,7 +114,7 @@ def update_exif(album, filename):
     ret = {}
     if exif:
         for tag, value in exif.items():
-            decoded = TAGS.get(tag, tag)
+            decoded = ExifTags.TAGS.get(tag, tag)
             ret[decoded] = value
     f = open(exiffile, 'w')
     for key in supported_exiftags:

@@ -1,5 +1,6 @@
 from flask import current_app
-import os, Image
+from PIL import Image
+import os
 
 def is_edited(album, filename):
     edit = os.path.join(current_app.config['EDITS_DIR'], album)

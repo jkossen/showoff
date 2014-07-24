@@ -1,6 +1,7 @@
 from flask import current_app
 from image import get_edit_or_original
-import os, Image
+from PIL import Image
+import os
 
 def clear_cache(album, filename, size):
     path_to_file = os.path.join(current_app.config['CACHE_DIR'], str(album), str(size), os.path.basename(filename))
