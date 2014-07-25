@@ -3,8 +3,9 @@ Showoff - Webbased photo management
 ===================================
 :Author: Jochem Kossen
 
-Showoff is a webbased image gallery and photo directory management system,
-written in Python_, utilizing Flask_ and for the interface a slightly modified
+Showoff is a webbased photo album management system explicitly aimed at simple needs.
+
+Showoff was written in Python_, utilizing Flask_ and for the interface a slightly modified
 Galleriffic_, a JQuery_ plugin.
 
 For a live demo of the viewer app, see http://jkossen.nl/showoff/public.html
@@ -12,7 +13,7 @@ For a live demo of the viewer app, see http://jkossen.nl/showoff/public.html
 Copyright and license
 ---------------------
 
-:copyright: (c) 2010-2012 by Jochem Kossen <jochem@jkossen.nl>
+:copyright: (c) 2010-2014 by Jochem Kossen <jochem@jkossen.nl>
 :license: two-clause BSD
 
 Redistribution and use in source and binary forms, with or without
@@ -65,18 +66,19 @@ Requirements
 ~~~~~~~~~~~~
 Showoff requires the following software:
 
-* `Python`_ (developed with 2.5 provided with Debian Lenny)
+* `Python`_
 * `Flask`_
-* Flask-WTF
-* py_bcrypt
+* `Flask-WTF`_
+* `py-bcrypt`_
 * `Werkzeug`_
 * `Jinja2`_
-* PIL
+* `Pillow`_
 
 Showoff comes with a setup.py installation script which uses setuptools.  The
 following command will install showoff and its dependencies:
 
 ::
+
     $ python setup.py install
 
 You can also use pip to install the dependencies, but then you need to register
@@ -104,6 +106,9 @@ concerning deployment.
 
 .. _Python: http://www.python.org
 .. _Flask: http://flask.pocoo.org
+.. _Flask-WTF: https://flask-wtf.readthedocs.org/en/latest/
+.. _Pillow: https://pillow.readthedocs.org/en/latest/
+.. _py-bcrypt: http://www.mindrot.org/projects/py-bcrypt/
 .. _Galleriffic: http://www.twospy.com/galleriffic/
 .. _JQuery: http://jquery.com/
 .. _Werkzeug: http://werkzeug.pocoo.org
