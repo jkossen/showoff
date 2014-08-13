@@ -10,6 +10,7 @@ class Show(object):
         self.data = {'files': [], 'settings': {}, 'users': {}}
         self.valid_settings = [
             'require_authentication',
+	    'reverse',
         ]
 
         self.load()

@@ -41,13 +41,13 @@ import os, re
 admin = Blueprint('admin', __name__, template_folder='templates')
 
 def render_themed(template, **options):
-    template_path = os.path.join(current_app.config['THEME'], template)
+    template_path = os.path.join(current_app.config['ADMIN_THEME'], template)
     return render_template(template_path, **options)
 
 @admin.route('/static_files/<path:filename>')
 def static_files(filename):
     """Send static files such as style sheets, JavaScript, etc."""
-    static_path = os.path.join(admin.root_path, 'templates', current_app.config['THEME'], 'static')
+    static_path = os.path.join(admin.root_path, 'templates', current_app.config['ADMIN_THEME'], 'static')
     return send_from_directory(static_path, filename)
 
 @admin.route('/<album>/image/<filename>/<int:size>/')
