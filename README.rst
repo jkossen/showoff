@@ -5,10 +5,11 @@ Showoff - Webbased photo management
 
 Showoff is a webbased photo album management system explicitly aimed at simple needs.
 
-Showoff was written in Python_, utilizing Flask_ and for the interface a slightly modified
-Galleriffic_, a JQuery_ plugin.
+Showoff was written in Python_, utilizing Flask_. The frontend uses Bootstrap_,
+jQuery_ and Swipebox_.
 
-For a live demo of the viewer app, see http://jkossen.nl/showoff/public.html
+Showoff is separated into an admin app and a frontend app which can run
+indepentently in different environments.
 
 Copyright and license
 ---------------------
@@ -43,7 +44,8 @@ IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 Showoff features and lack thereof
 ----------------------------------
 
-* Non-destructive: Showoff does not change original files
+* Non-destructive: Showoff does not change original files. All modifications
+  are done on copies in the cache
 
 * Image rotation based on exif data
 
@@ -53,9 +55,12 @@ Showoff features and lack thereof
 * You can use the admin to select which photo's should be published in the
   "show" which is the publicly visible album
 
+* You can set albums to require authentication for viewing, and add user
+  accounts with view rights per album
+
 * Separate frontend and admin apps
 
-* No database is used (everything is in flat-file or json files)
+* No database is used (everything is in flat-file and json files)
 
 * Theme support (Jinja2 is used for templates)
 
@@ -109,7 +114,8 @@ concerning deployment.
 .. _Flask-WTF: https://flask-wtf.readthedocs.org/en/latest/
 .. _Pillow: https://pillow.readthedocs.org/en/latest/
 .. _py-bcrypt: http://www.mindrot.org/projects/py-bcrypt/
-.. _Galleriffic: http://www.twospy.com/galleriffic/
-.. _JQuery: http://jquery.com/
+.. _jQuery: http://jquery.com/
+.. _Bootstrap: http://getbootstrap.com
+.. _Swipebox: http://brutaldesign.github.io/swipebox/
 .. _Werkzeug: http://werkzeug.pocoo.org
 .. _Jinja2: http://jinja.pocoo.org
