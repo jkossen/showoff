@@ -1,0 +1,31 @@
+{% extends "v2/layout.html" %}
+{% block extratitle %}Login - {% endblock %}
+
+{% block body %}
+<div class="container">
+    <h1>Login</h1>
+    <h3>This album requires a valid user</h3>
+    <form class="form-signin" action="{{ url_for('frontend.login', album=album) }}" method=post>
+        {{ form.csrf_token }}
+        {{ form.username.label }}
+        {{ form.username }}
+
+        {% if form.username.errors %}
+        <ul class="errors">
+            {% for error in form.username.errors %}<li>{{ error }}</li>{% endfor %}
+        </ul>
+        {% endif %}
+
+        {{ form.password.label }}
+        {{ form.password }}
+        {% if form.password.errors %}
+        <ul class="errors">
+            {% for error in form.password.errors %}<li>{{ error }}</li>{% endfor %}
+        </ul>
+        {% endif %}
+
+        <button class="btn btn-lg btn-primary" type="submit"><span class="glyphicon glyphicon-log-in"></span> login</button>
+    </form>
+</div>
+{% endblock %}
+

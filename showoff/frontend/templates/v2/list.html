@@ -1,0 +1,71 @@
+{% extends "v2/layout.html" %}
+
+{% block title %}{{ album }} page {{ paginator.page }} of {{ paginator.pages }}{% endblock %}
+
+{% block posthead %}
+<link rel="stylesheet" href="{{ url_for('frontend.static_files', filename='swipebox/src/css/swipebox.css') }}" type="text/css" />
+{% endblock %}
+
+
+{% block extranav %}
+{% endblock %}
+
+{% block extratitle %}<a class="navbar-brand" href="#">/ {{ album }}</a>{% endblock %}
+
+{% block body %}
+<div class="container">
+    <div class="page-header">
+        {% include "v2/_paginator.html" %}
+        <h1><a href="{{ url_for('frontend.show_album', album=album) }}">{{ album }}</a><small> ({{ paginator.count }} photos)</small></h1>
+    </div>
+
+
+    <h2>{{ config.THUMBNAILS_PER_PAGE }} photos per page. This is page {{ paginator.page }} of {{ paginator.pages }}</h2>
+
+    {% for message in get_flashed_messages() %}
+    <div class="flash">{{ message }}</div>
+    {% endfor %}
+
+    {% set rows = config.THUMBNAILS_PER_PAGE / 2 %}
+    {% for f in files | slice(rows|int) %}
+    <div class="row">
+        
+        {% for filename in f %}
+        <div class="col-md-6 navigation-container">
+            <div class="thumbnail">
+                <div class="btn-group-vertical" style="float:right;">
+                    <a class="btn" href="{{ url_for('frontend.image_page', album=album, filename=filename) }}" title="more information and sizes"><span class="glyphicon glyphicon-info-sign"></span></a>
+                    <a class="btn" href="{{ url_for('frontend.get_image', album=album, filename=filename, size='full') }}" title="Download full-size image"><span class="glyphicon glyphicon-floppy-disk"></span></a>
+                </div>
+                <a class="swipebox thumb" name="{{ filename }}" href="{{ url_for('frontend.get_image', album=album, filename=filename, size='full') }}" title="{{ filename }}">
+                    <img src="{{ url_for('frontend.get_image', album=album, filename=filename, size=config.THUMBNAIL_SIZE) }}" alt="{{ filename }}"/>
+                </a>
+                <div style="clear:both;"></div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% endfor %}
+
+    <div class="content">
+        <div class="slideshow-container">
+            <div id="loading" class="loader"></div>
+            <div id="slideshow" class="slideshow"></div>
+        </div>
+        <div id="caption" class="caption-container">
+            <div class="photo-index"></div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block postfooter %}
+<script type="text/javascript" src="{{ url_for('frontend.static_files', filename='swipebox/src/js/jquery.swipebox.js') }}"></script>
+<script type="text/javascript">
+    ;( function( $ ) {
+
+	$( '.swipebox' ).swipebox();
+
+    } )( jQuery );
+</script>
+{% endblock %}

@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        {% block head %}
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <title>{% block title %}{{ config.TITLE }}{% endblock %}</title>
+        <link rel="stylesheet" href="{{ url_for('frontend.static_files', filename='bootstrap/css/bootstrap.min.css') }}" type="text/css" />
+        <link rel="stylesheet" href="{{ url_for('frontend.static_files', filename='style.css') }}" />
+        {% block posthead %}{% endblock %}
+        {% endblock %}
+    </head>
+    <body>
+
+        <nav class="navbar navbar-default" role="navigation">
+            <div class="container">
+                <!-- Brand and toggle get grouped for better mobile display -->
+                <div class="navbar-header">
+                    <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+                        <span class="sr-only">Toggle navigation</span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </button>
+                    <a class="navbar-brand" href="{{ url_for('frontend.show_index') }}">{{ config.TITLE }}</a>{% block extratitle %}{% endblock %}
+                </div>
+                <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+                    <ul class="nav navbar-nav">
+                        {% block extranav %}{% endblock %}
+                    </ul>
+                </div>
+            </div>
+        </nav>
+
+        {% block body %}
+        {% endblock %}
+
+        <div class="container">
+            <div class="footer">
+                <hr>
+                copyright &copy; 2014 by Jochem Kossen
+            </div>
+        </div>
+
+        <script type="text/javascript" src="{{ url_for('frontend.static_files', filename='jquery.js') }}"></script>
+        <script type="text/javascript" src="{{ url_for('frontend.static_files', filename='bootstrap/js/bootstrap.min.js') }}"></script>
+        {% block postfooter %}{% endblock %}
+    </body>
+</html>
