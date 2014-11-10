@@ -13,6 +13,8 @@ def image_rotate_exif(album, filename):
     orientation_steps = { 3: 2, 6: 1, 8: 3 }
     if not is_edited(album, filename):
         img = Image.open(os.path.join(current_app.config['ALBUMS_DIR'], album, filename))
+        if not hasattr(img, "_getexif"):
+            return
         exif = img._getexif()
         ret = {}
         for tag, value in exif.items():
