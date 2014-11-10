@@ -18,5 +18,5 @@ def update_cache(album, filename, size):
 
     img = Image.open(os.path.join(get_edit_or_original(album, filename), filename))
     img.thumbnail((size, size), Image.ANTIALIAS)
-    img.save(os.path.join(tdir, os.path.basename(filename)), "JPEG")
+    img.save(os.path.join(tdir, os.path.basename(filename)))
 
