@@ -74,7 +74,7 @@ def rotate_url():
 @admin.route('/<album>/list/<int:page>/')
 def list_album(album, page, template='grid'):
     show = Show(album)
-    ext = re.compile(".jpg$", re.IGNORECASE)
+    ext = re.compile(".(jpg|png)$", re.IGNORECASE)
 
     all_files = os.listdir(os.path.join(current_app.config['ALBUMS_DIR'], album))
     all_files = filter(ext.search, all_files)
