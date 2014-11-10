@@ -7,7 +7,7 @@ def _image_rotate(album, filename, steps=1):
     rotate_image(album, filename, steps)
     for size in current_app.config['ALLOWED_SIZES']:
         if size != 'full':
-            clear_cache(admin, album, filename, size)
+            clear_cache(album, filename, size)
 
 def image_rotate_exif(album, filename):
     orientation_steps = { 3: 2, 6: 1, 8: 3 }
