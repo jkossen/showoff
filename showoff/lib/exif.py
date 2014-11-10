@@ -106,6 +106,8 @@ def update_exif(album, filename):
     if not os.path.exists(exifdir):
         os.mkdir(exifdir)
     img = Image.open(os.path.join(current_app.config['ALBUMS_DIR'], album, filename))
+    if not hasattr(img, '_getexif'):
+        return None
     exif = img._getexif()
 
     if exif == None:

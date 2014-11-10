@@ -62,6 +62,8 @@ def show_image_full(album, filename):
 def image_page(album, filename):
     show = Show(album)
     exif_array = get_exif(album, filename)
+    if exif_array is None:
+        exif_array = {}
     return render_themed('image.html', album=album, filename=filename,
                            exif=exif_array, show=show)
 
