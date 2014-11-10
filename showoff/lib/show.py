@@ -98,7 +98,7 @@ class Show(object):
         """Add all images in album to the show"""
         files = os.listdir(os.path.join(current_app.config['ALBUMS_DIR'], self.album))
 
-        # only list .jpg and .png files
+        # only list .jpg, .png, .gif, and .bmp files
         ext = re.compile(".(jpg|png|gif|bmp)$", re.IGNORECASE)
         files = filter(ext.search, files)
         files.sort()
