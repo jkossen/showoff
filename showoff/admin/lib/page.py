@@ -5,7 +5,7 @@ import os, re
 def _paginated_overview(album, page, endpoint='admin.list', template='grid'):
     files = os.listdir(os.path.join(current_app.config['ALBUMS_DIR'], album))
 
-    ext = re.compile(".(jpg|png)$", re.IGNORECASE)
+    ext = re.compile(".(jpg|png|gif)$", re.IGNORECASE)
     files = filter(ext.search, files)
 
     if len(files) == 0:
