@@ -1,9 +1,10 @@
 from flask import current_app, session
 from authentication import hash_password, validate_password
-import os, re, json
+import os
+import re
+import json
 from PIL import ExifTags, Image
 from .exif import get_exif_datetime
-
 
 
 class Show(object):
@@ -14,7 +15,7 @@ class Show(object):
         self.data = {'files': [], 'settings': {}, 'users': {}}
         self.valid_settings = [
             'require_authentication',
-	    'reverse',
+            'reverse',
         ]
 
         self.load()
@@ -45,14 +46,16 @@ class Show(object):
 
     def need_authentication(self):
         if (self.get_setting('require_authentication') != 'no'):
-            if session.has_key('username') and session.has_key('album') and session['album'] == self.album:
+            if 'username' in session and 'album' in session and \
+                    session['album'] == self.album:
                 return False
             return True
         return False
 
     def check_auth(self, username, seed, password):
         if username in self.data['users']:
-            return validate_password(seed, password, self.data['users'][username])
+            return validate_password(seed, password,
+                                     self.data['users'][username])
         return False
 
     def change_setting(self, setting, value):
@@ -83,7 +86,8 @@ class Show(object):
 
     def add_all_images(self):
         """Add all images in album to the show"""
-        files = os.listdir(os.path.join(current_app.config['ALBUMS_DIR'], self.album))
+        files = os.listdir(os.path.join(current_app.config['ALBUMS_DIR'],
+                                        self.album))
 
         # only list .jpg, .png, .gif, and .bmp files
         ext = re.compile(".(jpg|png|gif|bmp)$", re.IGNORECASE)
@@ -104,4 +108,3 @@ class Show(object):
             return True
         except:
             return False
-
