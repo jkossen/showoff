@@ -2,6 +2,9 @@ from flask import current_app, session
 from authentication import hash_password, validate_password
 import os, re, json
 from PIL import ExifTags, Image
+from .exif import get_exif_datetime
+
+
 
 class Show(object):
     def __init__(self, album):
@@ -73,26 +76,10 @@ class Show(object):
     def sort_by_exif_datetime(self):
         filenames = []
         for filename in self.data['files']:
-            datetime = self.get_exif_datetime(current_app, self.album, filename)
+            datetime = get_exif_datetime(current_app, self.album, filename)
             filenames.append((datetime, filename))
         self.data['files'] = [v for (k, v) in sorted(filenames)]
         return self.save()
-
-    def get_exif_datetime(self, app, album, filename):
-        img = Image.open(os.path.join(current_app.config['ALBUMS_DIR'], album, filename))
-        if not hasattr(img, "_getexif"):
-            return None
-        exif = img._getexif()
-        datetime = self.get_exif_tag_value(exif, 'DateTime')
-        return datetime
-
-    def get_exif_tag_value(self, exif, tag):
-        # TODO: move this function somewhere else
-        for tag, value in exif.items():
-            decoded = ExifTags.TAGS.get(tag, tag)
-            if decoded == tag:
-                return value
-        return None
 
     def add_all_images(self):
         """Add all images in album to the show"""

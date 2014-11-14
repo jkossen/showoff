@@ -144,3 +144,17 @@ def get_exif(album, filename):
 
     return exif
 
+def get_exif_tag_value(exif, tag):
+    for tag, value in exif.items():
+        decoded = ExifTags.TAGS.get(tag, tag)
+        if decoded == tag:
+            return value
+    return None
+
+def get_exif_datetime(app, album, filename):
+    img = Image.open(os.path.join(current_app.config['ALBUMS_DIR'], album, filename))
+    if not hasattr(img, "_getexif"):
+        return None
+    exif = img._getexif()
+    datetime = get_exif_tag_value(exif, 'DateTime')
+    return datetime
