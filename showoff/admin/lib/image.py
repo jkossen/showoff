@@ -7,12 +7,14 @@ def _image_rotate(album, filename, steps=1):
     rotate_image(album, filename, steps)
     for size in current_app.config['ALLOWED_SIZES']:
         if size != 'full':
-            clear_cache(admin, album, filename, size)
+            clear_cache(album, filename, size)
 
 def image_rotate_exif(album, filename):
     orientation_steps = { 3: 2, 6: 1, 8: 3 }
     if not is_edited(album, filename):
         img = Image.open(os.path.join(current_app.config['ALBUMS_DIR'], album, filename))
+        if not hasattr(img, "_getexif"):
+            return
         exif = img._getexif()
         ret = {}
         for tag, value in exif.items():

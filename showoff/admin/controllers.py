@@ -62,6 +62,8 @@ def show_image_full(album, filename):
 def image_page(album, filename):
     show = Show(album)
     exif_array = get_exif(album, filename)
+    if exif_array is None:
+        exif_array = {}
     return render_themed('image.html', album=album, filename=filename,
                            exif=exif_array, show=show)
 
@@ -74,7 +76,7 @@ def rotate_url():
 @admin.route('/<album>/list/<int:page>/')
 def list_album(album, page, template='grid'):
     show = Show(album)
-    ext = re.compile(".jpg$", re.IGNORECASE)
+    ext = re.compile(".(jpg|png|gif|bmp)$", re.IGNORECASE)
 
     all_files = os.listdir(os.path.join(current_app.config['ALBUMS_DIR'], album))
     all_files = filter(ext.search, all_files)
