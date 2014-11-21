@@ -73,15 +73,18 @@ class Show(object):
 
     def load(self):
         if os.path.exists(self.show_file):
-            fp = open(self.show_file, 'r')
-            self.data.update(json.load(fp))
+            with open(self.show_file, 'r') as fp:
+                self.data.update(json.load(fp))
 
     def sort_by_exif_datetime(self):
         filenames = []
+
         for filename in self.data['files']:
             datetime = get_exif_datetime(current_app, self.album, filename)
             filenames.append((datetime, filename))
+
         self.data['files'] = [v for (k, v) in sorted(filenames)]
+
         return self.save()
 
     def add_all_images(self):
@@ -101,10 +104,10 @@ class Show(object):
         try:
             if not os.path.exists(self.show_dir):
                 os.mkdir(self.show_dir)
-            fp = open(self.show_file, 'w')
-            js = json.dumps(self.data)
-            fp.write(js)
-            fp.close()
+
+            with open(self.show_file, 'w') as fp:
+                fp.write(json.dumps(self.data))
+
             return True
         except:
             return False
