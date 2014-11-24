@@ -1,5 +1,5 @@
 from flask import current_app, send_from_directory
-from showoff.lib.exif import ExifManager
+from showoff.lib import ExifManager
 from PIL import Image
 import os
 
