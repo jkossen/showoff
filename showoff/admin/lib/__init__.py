@@ -1,1 +1,1 @@
-from image import ImageModifier
+from image_modifier import ImageModifier
