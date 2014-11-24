@@ -2,165 +2,158 @@ from flask import current_app
 from PIL import ExifTags, Image
 import os
 
-supported_exiftags = [
-    "ImageWidth",
-    "ImageLength",
-    "BitsPerSample",
-    "Compression",
-    "PhotometricInterpretation",
-    "ImageDescription",
-    "Make",
-    "Model",
-    "StripOffsets",
-    "Orientation",
-    "SamplesPerPixel",
-    "RowsPerStrip",
-    "StripByteConunts",
-    "XResolution",
-    "YResolution",
-    "PlanarConfiguration",
-    "ResolutionUnit",
-    "TransferFunction",
-    "Software",
-    "DateTime",
-    "Artist",
-    "WhitePoint",
-    "PrimaryChromaticities",
-    "JpegIFOffset",
-    "JpegIFByteCount",
-    "YCbCrCoefficients",
-    "YCbCrSubSampling",
-    "YCbCrPositioning",
-    "ReferenceBlackWhite",
-    "RelatedImageFileFormat",
-    "RelatedImageLength",
-    "RelatedImageWidth",
-    "CFARepeatPatternDim",
-    "CFAPattern",
-    "BatteryLevel",
-    "Copyright",
-    "ExposureTime",
-    "FNumber",
-    "ExifOffset",
-    "InterColorProfile",
-    "ExposureProgram",
-    "SpectralSensitivity",
-    "GPSInfo",
-    "ISOSpeedRatings",
-    "OECF",
-    "Interlace",
-    "TimeZoneOffset",
-    "SelfTimerMode",
-    "ExifVersion",
-    "DateTimeOriginal",
-    "DateTimeDigitized",
-    "ComponentsConfiguration",
-    "CompressedBitsPerPixel",
-    "CompressedBitsPerPixel",
-    "ShutterSpeedValue",
-    "ApertureValue",
-    "BrightnessValue",
-    "ExposureBiasValue",
-    "MaxApertureValue",
-    "SubjectDistance",
-    "MeteringMode",
-    "LightSource",
-    "Flash",
-    "FocalLength",
-    "FlashEnergy",
-    "SpatialFrequencyResponse",
-    "Noise",
-    "ImageNumber",
-    "SecurityClassification",
-    "ImageHistory",
-    "SubjectLocation",
-    "ExposureIndex",
-    "TIFF/EPStandardID",
-    "UserComment",
-    "SubsecTime",
-    "SubsecTimeOriginal",
-    "SubsecTimeDigitized",
-    "FlashPixVersion",
-    "ColorSpace",
-    "ExifImageWidth",
-    "ExifImageHeight",
-    "RelatedSoundFile",
-    "ExifInteroperabilityOffset",
-    "FlashEnergy",
-    "SpatialFrequencyResponse",
-    "FocalPlaneXResolution",
-    "FocalPlaneYResolution",
-    "FocalPlaneResolutionUnit",
-    "SubjectLocation",
-    "ExposureIndex",
-    "SensingMethod",
-    "FileSource",
-    "SceneType",
-    "CFAPattern",
-    ]
 
+class ExifManager(object):
+    def __init__(self, image):
+        self.image = image
+        self.supported_exiftags = [
+            "ImageWidth",
+            "ImageLength",
+            "BitsPerSample",
+            "Compression",
+            "PhotometricInterpretation",
+            "ImageDescription",
+            "Make",
+            "Model",
+            "StripOffsets",
+            "Orientation",
+            "SamplesPerPixel",
+            "RowsPerStrip",
+            "StripByteConunts",
+            "XResolution",
+            "YResolution",
+            "PlanarConfiguration",
+            "ResolutionUnit",
+            "TransferFunction",
+            "Software",
+            "DateTime",
+            "Artist",
+            "WhitePoint",
+            "PrimaryChromaticities",
+            "JpegIFOffset",
+            "JpegIFByteCount",
+            "YCbCrCoefficients",
+            "YCbCrSubSampling",
+            "YCbCrPositioning",
+            "ReferenceBlackWhite",
+            "RelatedImageFileFormat",
+            "RelatedImageLength",
+            "RelatedImageWidth",
+            "CFARepeatPatternDim",
+            "CFAPattern",
+            "BatteryLevel",
+            "Copyright",
+            "ExposureTime",
+            "FNumber",
+            "ExifOffset",
+            "InterColorProfile",
+            "ExposureProgram",
+            "SpectralSensitivity",
+            "GPSInfo",
+            "ISOSpeedRatings",
+            "OECF",
+            "Interlace",
+            "TimeZoneOffset",
+            "SelfTimerMode",
+            "ExifVersion",
+            "DateTimeOriginal",
+            "DateTimeDigitized",
+            "ComponentsConfiguration",
+            "CompressedBitsPerPixel",
+            "CompressedBitsPerPixel",
+            "ShutterSpeedValue",
+            "ApertureValue",
+            "BrightnessValue",
+            "ExposureBiasValue",
+            "MaxApertureValue",
+            "SubjectDistance",
+            "MeteringMode",
+            "LightSource",
+            "Flash",
+            "FocalLength",
+            "FlashEnergy",
+            "SpatialFrequencyResponse",
+            "Noise",
+            "ImageNumber",
+            "SecurityClassification",
+            "ImageHistory",
+            "SubjectLocation",
+            "ExposureIndex",
+            "TIFF/EPStandardID",
+            "UserComment",
+            "SubsecTime",
+            "SubsecTimeOriginal",
+            "SubsecTimeDigitized",
+            "FlashPixVersion",
+            "ColorSpace",
+            "ExifImageWidth",
+            "ExifImageHeight",
+            "RelatedSoundFile",
+            "ExifInteroperabilityOffset",
+            "FlashEnergy",
+            "SpatialFrequencyResponse",
+            "FocalPlaneXResolution",
+            "FocalPlaneYResolution",
+            "FocalPlaneResolutionUnit",
+            "SubjectLocation",
+            "ExposureIndex",
+            "SensingMethod",
+            "FileSource",
+            "SceneType",
+            "CFAPattern"
+        ]
 
-# update_exif {{{
-def update_exif(album, filename):
-    exifdir = os.path.join(current_app.config['CACHE_DIR'], album, 'exif')
-    exiffile = os.path.join(exifdir, os.path.basename(filename) + '.exif')
-    if not os.path.exists(exifdir):
-        os.mkdir(exifdir)
-    img = Image.open(os.path.join(current_app.config['ALBUMS_DIR'],
-                                  album, filename))
-    if not hasattr(img, '_getexif'):
-        return None
-    exif = img._getexif()
+    def update(self):
+        if not os.path.exists(self.image.exif_dir):
+            os.mkdir(self.image.exifdir)
+        img = Image.open(self.image.orig_file)
+        if not hasattr(img, '_getexif'):
+            return None
+        exif = img._getexif()
 
-    if exif == None:
-        return
+        if exif is None:
+            return
 
-    ret = {}
-    if exif:
+        ret = {}
+        if exif:
+            for tag, value in exif.items():
+                decoded = ExifTags.TAGS.get(tag, tag)
+                try:
+                    ret[decoded] = str(value).encode('utf-8')
+                except:
+                    pass
+
+        with open(self.image.exif_file, 'w') as f:
+            for key in self.supported_exiftags:
+                if key in ret:
+                    f.write("%s|%s\n" % (key, ret[key]))
+        return ret
+
+    def get_exif(self):
+        exif = {}
+
+        if os.path.exists(self.image.exif_file):
+            with open(self.image.exif_file) as f:
+                for line in f.readlines():
+                    line_arr = line.split('|')
+                    if len(line_arr) > 1:
+                        exif[line_arr[0]] = line_arr[1]
+        else:
+            exif = self.update_exif()
+
+        return exif
+
+    def get_exif_tag_value(self, exif, tag):
         for tag, value in exif.items():
             decoded = ExifTags.TAGS.get(tag, tag)
-            ret[decoded] = value
-    f = open(exiffile, 'w')
-    for key in supported_exiftags:
-        if key in ret:
-            f.write("%s|%s\n" % (key, ret[key]))
-    f.close()
-    return ret
-# }}}
-
-
-def get_exif(album, filename):
-    exifdir = os.path.join(current_app.config['CACHE_DIR'], album, 'exif')
-    exiffile = os.path.join(exifdir, os.path.basename(filename) + '.exif')
-
-    exif = {}
-
-    if os.path.exists(exiffile):
-        f = open(exiffile)
-        for line in f.readlines():
-            line_arr = line.split('|')
-            if len(line_arr) > 1:
-                exif[line_arr[0]] = line_arr[1]
-        f.close()
-    else:
-        exif = update_exif(album, filename)
-
-    return exif
-
-
-def get_exif_tag_value(exif, tag):
-    for tag, value in exif.items():
-        decoded = ExifTags.TAGS.get(tag, tag)
-        if decoded == tag:
-            return value
-    return None
-
-
-def get_exif_datetime(app, album, filename):
-    img = Image.open(os.path.join(current_app.config['ALBUMS_DIR'], album,
-                                  filename))
-    if not hasattr(img, "_getexif"):
+            if decoded == tag:
+                return value
         return None
-    exif = img._getexif()
-    datetime = get_exif_tag_value(exif, 'DateTime')
-    return datetime
+
+    def get_exif_datetime(self):
+        img = Image.open(self.image.orig_file)
+        if not hasattr(img, "_getexif"):
+            return None
+        exif = img._getexif()
+        datetime = self.get_exif_tag_value(exif, 'DateTime')
+        return datetime

@@ -33,9 +33,8 @@ IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 from flask import Blueprint, current_app, render_template, \
     send_from_directory, url_for, redirect, jsonify, request
-from showoff.lib import Show, get_exif
-from showoff.admin.lib.image import _image_rotate, image_rotate_exif, \
-    image_retrieve
+from showoff.lib import Show, Image, CacheManager, ExifManager
+from showoff.admin.lib import ImageManager
 from showoff.admin.lib.page import _paginated_overview
 
 import os
@@ -61,18 +60,22 @@ def static_files(filename):
 
 @admin.route('/<album>/image/<filename>/<int:size>/')
 def show_image(album, filename, size=None):
-    return image_retrieve(album, filename, size)
+    image = Image(album, filename)
+    cache = CacheManager(image)
+    return cache.send(size)
 
 
 @admin.route('/<album>/image/<filename>/full/')
 def show_image_full(album, filename):
-    return image_retrieve(album, filename)
+    return show_image(album, filename, 'full')
 
 
 @admin.route('/<album>/show/<filename>')
 def image_page(album, filename):
     show = Show(album)
-    exif_array = get_exif(album, filename)
+    image = Image(album, filename)
+    exif_manager = ExifManager(image)
+    exif_array = exif_manager.get_exif()
     if exif_array is None:
         exif_array = {}
     return render_themed('image.html', album=album, filename=filename,
@@ -91,17 +94,16 @@ def list_album(album, page, template='grid'):
     show = Show(album)
     ext = re.compile(".(jpg|png|gif|bmp)$", re.IGNORECASE)
 
-    all_files = os.listdir(os.path.join(current_app.config['ALBUMS_DIR'],
-                                        album))
-    all_files = filter(ext.search, all_files)
+    album_dir = os.path.join(current_app.config['ALBUMS_DIR'], album)
+    all_files = [f for f in os.listdir(album_dir) if ext.match(f)]
     all_files.sort()
 
-    p = _paginated_overview(album, page, 'admin.list_album', template)
+    paginator = _paginated_overview(album, page, 'admin.list_album', template)
     return render_themed(template + '.html',
                          album=album,
                          show=show,
-                         files=p.entries,
-                         paginator=p,
+                         files=paginator.entries,
+                         paginator=paginator,
                          page=page,
                          all_files=all_files)
 
@@ -121,13 +123,17 @@ def show_index():
 
 @admin.route('/<album>/rotate/<int:steps>/<filename>/')
 def image_rotate(album, filename, steps=1):
-    _image_rotate(album, filename, steps)
+    image = Image(album, filename)
+    image_manager = ImageManager(image)
+    image_manager.rotate(steps)
     return jsonify(result='OK')
 
 
 @admin.route('/<album>/rotate_exif/<filename>/')
 def exif_rotate_image(album, filename):
-    image_rotate_exif(album, filename)
+    image = Image(album, filename)
+    image_manager = ImageManager(image)
+    image_manager.rotate_exif()
     return jsonify(result='OK')
 
 
@@ -154,7 +160,7 @@ def sort_show_by_exifdate(album):
     """Sort the show by exif datetime """
     show = Show(album)
     show.sort_by_exif_datetime()
-    return redirect(request.referrer or url_for('.index'))
+    return goback(True)
 
 
 @admin.route('/<album>/edit_users/')
@@ -171,13 +177,13 @@ def show_edit_users(album):
 def add_all_images_to_show(album):
     show = Show(album)
     show.add_all_images()
-    return redirect(request.referrer or url_for('.index'))
+    return goback(True)
 
 
 @admin.route('/<album>/set/<setting>/<value>/')
 def show_change_setting(album, setting, value):
     show = Show(album)
-    if (show.change_setting(setting, value) and show.save()):
+    if show.change_setting(setting, value) and show.save():
         return jsonify(result='OK')
     else:
         return jsonify(result='Failed')
@@ -200,8 +206,8 @@ def show_remove_user(album, username):
     return goback(show.save())
 
 
-def goback(ok):
-    if (ok):
+def goback(is_ok):
+    if is_ok:
         return redirect(request.referrer or url_for('.index'))
     else:
         return jsonify(result='Failed')

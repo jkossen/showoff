@@ -1,10 +1,10 @@
 from flask import current_app, session
-from authentication import hash_password, validate_password
+from showoff.lib.authentication import hash_password, validate_password
+from showoff.lib.image import Image
+from showoff.lib.exif import ExifManager
 import os
 import re
 import json
-from PIL import ExifTags, Image
-from .exif import get_exif_datetime
 
 
 class Show(object):
@@ -45,7 +45,7 @@ class Show(object):
         self.data['users'].pop(username)
 
     def need_authentication(self):
-        if (self.get_setting('require_authentication') != 'no'):
+        if self.get_setting('require_authentication') != 'no':
             if 'username' in session and 'album' in session and \
                     session['album'] == self.album:
                 return False
@@ -73,17 +73,19 @@ class Show(object):
 
     def load(self):
         if os.path.exists(self.show_file):
-            with open(self.show_file, 'r') as fp:
-                self.data.update(json.load(fp))
+            with open(self.show_file) as infile:
+                self.data.update(json.load(infile))
 
     def sort_by_exif_datetime(self):
         filenames = []
 
         for filename in self.data['files']:
-            datetime = get_exif_datetime(current_app, self.album, filename)
+            image = Image(self.album, filename)
+            exif_manager = ExifManager(image)
+            datetime = exif_manager.get_exif_datetime()
             filenames.append((datetime, filename))
 
-        self.data['files'] = [v for (k, v) in sorted(filenames)]
+        self.data['files'] = [filename for (datetime, filename) in sorted(filenames)]
 
         return self.save()
 
@@ -94,7 +96,7 @@ class Show(object):
 
         # only list .jpg, .png, .gif, and .bmp files
         ext = re.compile(".(jpg|png|gif|bmp)$", re.IGNORECASE)
-        files = filter(ext.search, files)
+        files = [f for f in files if ext.match(f)]
         files.sort()
 
         for filename in files:
@@ -105,8 +107,8 @@ class Show(object):
             if not os.path.exists(self.show_dir):
                 os.mkdir(self.show_dir)
 
-            with open(self.show_file, 'w') as fp:
-                fp.write(json.dumps(self.data))
+            with open(self.show_file, 'w') as outfile:
+                outfile.write(json.dumps(self.data))
 
             return True
         except:
