@@ -51,7 +51,7 @@
         </a>
         <div id="select-for-show">publish:
             <span id="toggle-show-{{ loop.index }}">
-                {% if filename in files %}
+                {% if filename in show.data['files'] %}
                 <a  href="#"
                     onclick='return SHOWOFFADMIN.toggle_show("#toggle-show-{{ loop.index }}",
                     "{{ url_for('admin.remove_image_from_show', album=album, filename=filename) }}",
