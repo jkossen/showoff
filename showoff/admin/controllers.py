@@ -34,7 +34,7 @@ IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 from flask import Blueprint, current_app, render_template, \
     send_from_directory, url_for, redirect, jsonify, request
 from showoff.lib import Show, Image, CacheManager, ExifManager
-from showoff.admin.lib import ImageManager
+from showoff.admin.lib import ImageModifier
 from showoff.admin.lib.page import _paginated_overview
 
 import os
@@ -124,16 +124,16 @@ def show_index():
 @admin.route('/<album>/rotate/<int:steps>/<filename>/')
 def image_rotate(album, filename, steps=1):
     image = Image(album, filename)
-    image_manager = ImageManager(image)
-    image_manager.rotate(steps)
+    image_modifier = ImageModifier(image)
+    image_modifier.rotate(steps)
     return jsonify(result='OK')
 
 
 @admin.route('/<album>/rotate_exif/<filename>/')
 def exif_rotate_image(album, filename):
     image = Image(album, filename)
-    image_manager = ImageManager(image)
-    image_manager.rotate_exif()
+    image_modifier = ImageModifier(image)
+    image_modifier.rotate_exif()
     return jsonify(result='OK')
 
 

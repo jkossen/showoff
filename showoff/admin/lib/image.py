@@ -3,7 +3,7 @@ from PIL import ExifTags, Image
 import os
 
 
-class ImageManager(object):
+class ImageModifier(object):
     def __init__(self, image):
         self.image = image
         self.cache = CacheManager(image)

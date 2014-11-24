@@ -1,1 +1,1 @@
-from image import ImageManager
+from image import ImageModifier
