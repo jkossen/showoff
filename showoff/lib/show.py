@@ -1,7 +1,7 @@
 from flask import current_app, session
-from showoff.lib.authentication import hash_password, validate_password
-from showoff.lib.image import Image
-from showoff.lib.exif import ExifManager
+from showoff.lib import hash_password, validate_password
+from showoff.lib import Image
+from showoff.lib import ExifManager
 import os
 import re
 import json
@@ -20,19 +20,41 @@ class Show(object):
 
         self.load()
 
+    def album_contains(self, filename):
+        files = os.listdir(os.path.join(current_app.config['ALBUMS_DIR'],
+                                        self.album))
+        return filename in files
+
     def nr_of_items(self):
         return len(self.data['files'])
 
     def is_enabled(self):
         return self.nr_of_items() > 0
 
+    def toggle_image(self, filename):
+        if not self.album_contains(filename):
+            return False
+
+        if filename in self.data['files']:
+            self.data['files'].remove(filename)
+        else:
+            self.data['files'].append(filename)
+
+        return self.save()
+
     def add_image(self, filename):
+        if not self.album_contains(filename):
+            return False
+
         if filename not in self.data['files']:
             self.data['files'].append(filename)
             return self.save()
         return True
 
     def remove_image(self, filename):
+        if not self.album_contains(filename):
+            return False
+
         if filename in self.data['files']:
             self.data['files'].remove(filename)
             return self.save()
@@ -96,7 +118,7 @@ class Show(object):
 
         # only list .jpg, .png, .gif, and .bmp files
         ext = re.compile(".(jpg|png|gif|bmp)$", re.IGNORECASE)
-        files = [f for f in files if ext.match(f)]
+        files = [f for f in files if ext.search(f)]
         files.sort()
 
         for filename in files:
