@@ -1,0 +1,101 @@
+{% extends "v2/layout.html" %}
+
+{% block title %}{{ album }} - edit users{% endblock %}
+
+{% block extrahead %}
+<script src="{{ url_for('admin.static_files', filename='jquery.js') }}"></script>
+<script src="{{ url_for('admin.static_files', filename='showoffadmin.js') }}"></script>
+<script>
+    show_toggle_require_auth = function(element, value) {
+        $(element).html('please wait ...');
+        url_yes = '{{ url_for('admin.show_change_setting', album=album, setting='require_authentication', value='yes') }}';
+        url_no = '{{ url_for('admin.show_change_setting', album=album, setting='require_authentication', value='no') }}';
+        url = (value == 'yes') ? url_yes : url_no;
+        result = $.getJSON(url, false, function() {
+            img = (value == 'yes') ? '{{ url_for('admin.static_files', filename='on.png') }}' : '{{ url_for('admin.static_files', filename='off.png') }}';
+            new_text = '<img src="' + img + '">';
+            new_value = (value == 'yes') ? 'no' : 'yes';
+            done_html = '<a href="#" onclick=\'return show_toggle_require_auth("' + element + '", "' + new_value + '");\'>' + new_text + '</a>';
+            $(element).html(done_html);
+        });
+        return false;
+    }
+</script>
+{% endblock %}
+
+{% block body %}
+<h1><a href="{{ url_for('admin.show_album', album=album) }}">{{ album }}</a></h1>
+
+require authentication:
+<span id="toggle_show">
+    {% if show.get_setting('require_authentication') == 'yes' %}
+    <a href="#" onclick="return show_toggle_require_auth('#toggle_show', 'no')"><img src="{{ url_for('admin.static_files', filename='on.png') }}" alt="disable"></a>
+    {% else %}
+    <a href="#" onclick="return show_toggle_require_auth('#toggle_show', 'yes')"><img src="{{ url_for('admin.static_files', filename='off.png') }}" alt="disable"></a>
+    {% endif %}
+</span>
+
+{% for message in get_flashed_messages() %}
+<div class="flash">{{ message }}</div>
+{% endfor %}
+
+<h3>Add new user</h3>
+<form role="form" class="form-horizontal" action="{{ url_for('admin.show_change_password', album=album) }}" method="POST">
+    <div class="form-group">
+        <label for="new-user-username" class="col-sm-2 control-label">Username</label>
+        <div class="col-sm-10">
+            <input class="form-control" id="new-user-username" type="text" name="username" placeholder="Username">
+        </div>
+    </div>
+
+    <div class="form-group">
+        <label for="new-user-password" class="col-sm-2 control-label">Password</label>
+        <div class="col-sm-10">
+            <input class="form-control" id="new-user-password" type="password" name="password" placeholder="Password">
+        </div>
+    </div>
+
+    <div class="form-group">
+        <div class="col-sm-offset-2 col-sm-10">    
+            <button type="submit" class="btn btn-primary">save</button>
+        </div>
+    </div>
+</form>
+
+<h3>Existing users</h3>
+{% for user in users %}
+<div id="user-{{ loop.index }}">
+    <form role="form" class="form-horizontal" action="{{ url_for('admin.show_change_password', album=album) }}" method="POST">
+        <input class="form-control" type="hidden" name="username" value="{{ user }}">
+
+        <div class="form-group">
+            <label for="user-password-{{ user }}" class="col-sm-3 control-label" style="text-align:left;">{{ user }}</label>
+            <div class="col-sm-7">
+                <input class="form-control" id="user-password-{{ user }}" type="password" name="password" placeholder="Password">
+            </div>
+            <div class="col-sm-1">    
+                <button type="submit" class="btn btn-primary">save</button>
+            </div>
+            <div class="col-sm-1">    
+                <button type="button" id="delete-user-{{ user }}" data-username="{{ user }}" data-index="{{ loop.index }}" class="btn btn-danger delete-user">Delete user</button>
+            </div>
+        </div>
+    </form>
+</div>
+<!--a href="{{ url_for('admin.show_remove_user', album=album, username=user) }}">Delete user</a-->
+{% endfor %}
+
+<script>
+    $(document).ready(function() {
+        var cfg = {
+            'base_url': '{{ url_for('admin.show_index') }}',
+            'album': '{{ album }}'
+        };
+
+        var images = [ ];
+
+        SHOWOFFADMIN.init(cfg, images);
+        SHOWOFFADMIN.init_edit_users();
+});
+</script>
+{% endblock %}

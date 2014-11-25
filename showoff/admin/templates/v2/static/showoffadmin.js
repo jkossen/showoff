@@ -48,6 +48,19 @@ var SHOWOFFADMIN = SHOWOFFADMIN || {};
         });
     };
 
+    var init_edit_users = function() {
+        $('.delete-user').on('click', function(event) {
+            event.preventDefault();
+            var i = $(this).data('index')
+            if (confirm('Are you sure you want to delete user "' + $(this).data('username') + '"?')) {
+                var url = album_url() + 'remove_user/' + $(this).data('username') + '/'
+                var result = $.getJSON(url, false, function() {
+                    $('#user-' + i).remove();
+                });
+            }
+        });
+    };
+
     var get = function(key) {
         return _cfg[key];
     };
@@ -57,7 +70,7 @@ var SHOWOFFADMIN = SHOWOFFADMIN || {};
     };
 
     var album_url = function() {
-        return ns.get('base-url') + ns.get('album') + '/';
+        return ns.get('base_url') + ns.get('album') + '/';
     };
 
     var file_url = function(filename) {
@@ -129,6 +142,7 @@ var SHOWOFFADMIN = SHOWOFFADMIN || {};
 
     // export public functions
     ns.init = init;
+    ns.init_edit_users = init_edit_users;
     ns.get = get;
     ns.set = set;
 }(SHOWOFFADMIN));
