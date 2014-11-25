@@ -74,7 +74,7 @@ var SHOWOFFADMIN = SHOWOFFADMIN || {};
     };
 
     var file_url = function(filename) {
-        return album_url + filename + '/'
+        return album_url() + filename + '/'
     };
 
     var glyph = function(icon) {
