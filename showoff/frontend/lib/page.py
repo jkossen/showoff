@@ -19,4 +19,3 @@ def get_paginator(album, page, endpoint, template):
 
     p = Paginator(album, files, current_app.config['THUMBNAILS_PER_PAGE'], page, endpoint, template)
     return p
-

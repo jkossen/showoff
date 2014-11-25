@@ -36,4 +36,3 @@ def authenticate(album):
 
                 return True
     return False
-
