@@ -215,8 +215,8 @@ def show_change_password(album):
 def show_remove_user(album, username):
     show = Show(album)
     show.remove_user(username)
-    return goback(show.save())
-
+    show.save()
+    return jsonify(result='OK')
 
 def goback(is_ok):
     if is_ok:
