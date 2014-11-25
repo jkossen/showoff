@@ -7,4 +7,3 @@ def hash_password(seed, plaintext):
 def validate_password(seed, plaintext, hashed):
     """Validation function for blowfish encrypted password"""
     return bcrypt.hashpw('%s%s' % (seed, plaintext), hashed) == hashed
-
