@@ -9,7 +9,7 @@
 {% endblock %}
 
 {% block body %}
-{% include "default/_paginator.html" %}
+{% include "v2/_paginator.html" %}
 <h1><a href="{{ url_for('admin.show_album', album=album) }}">{{ album }}</a></h1>
 {% for message in get_flashed_messages() %}
 <div class="flash">{{ message }}</div>
@@ -38,11 +38,11 @@
 <div class="grid-container">
     {% for filename in files %}
     <div class="col-md-4">
-        <a class="grid-item-image" name="{{ filename }}"
+        <a class="grid-item-image"
            href="{{ url_for('admin.image_page', album=album, filename=filename) }}" title="{{ filename }}">
             <img id="img-{{ loop.index }}" src="{{ url_for('admin.show_image', album=album, filename=filename, size=config.GRID_SIZE) }}" alt="{{ filename }}" data-filename="{{ filename }}">
         </a>
-        <div id="select-for-show">publish:
+        <div>publish:
             <a href="#" class="toggle-publish" data-filename="{{ filename }}" data-value="{% if filename in show.data['files'] %}yes{% else %}no{% endif %}"></a>
         </div>
         <div>rotate:
@@ -54,9 +54,8 @@
     {% endfor %}
 </div>
 
-{% include "default/_paginator.html" %}
-</div>
-</div>
+{% include "v2/_paginator.html" %}
+
 <div id="footer">&copy; 2010-2014 Jochem Kossen</div>
 
 <script>
