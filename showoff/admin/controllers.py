@@ -95,8 +95,11 @@ def list_album(album, page, template='grid'):
     ext = re.compile(".(jpg|png|gif|bmp)$", re.IGNORECASE)
 
     album_dir = os.path.join(current_app.config['ALBUMS_DIR'], album)
-    all_files = [f for f in os.listdir(album_dir) if ext.match(f)]
+    all_files = [f for f in os.listdir(album_dir) if ext.search(f)]
     all_files.sort()
+
+    if show.get_setting('reverse') == 'yes':
+        all_files.reverse()
 
     paginator = _paginated_overview(album, page, 'admin.list_album', template)
     return render_themed(template + '.html',
@@ -121,7 +124,7 @@ def show_index():
     return render_themed('index.html', albums=album_list)
 
 
-@admin.route('/<album>/rotate/<int:steps>/<filename>/')
+@admin.route('/<album>/<filename>/rotate/<int:steps>/')
 def image_rotate(album, filename, steps=1):
     image = Image(album, filename)
     image_modifier = ImageModifier(image)
@@ -135,6 +138,15 @@ def exif_rotate_image(album, filename):
     image_modifier = ImageModifier(image)
     image_modifier.rotate_exif()
     return jsonify(result='OK')
+
+
+@admin.route('/<album>/<filename>/toggle_publish/')
+def toggle_publish_image(album, filename):
+    """Toggle publish image"""
+    show = Show(album)
+    if show.toggle_image(filename):
+        return jsonify(result='OK')
+    return jsonify(result='Failed')
 
 
 @admin.route('/<album>/add_image_to_show/<filename>/')
