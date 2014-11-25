@@ -37,7 +37,7 @@
                     <a class="btn" href="{{ url_for('frontend.image_page', album=album, filename=filename) }}" title="more information and sizes"><span class="glyphicon glyphicon-info-sign"></span></a>
                     <a class="btn" href="{{ url_for('frontend.get_image', album=album, filename=filename, size='full') }}" title="Download full-size image"><span class="glyphicon glyphicon-floppy-disk"></span></a>
                 </div>
-                <a class="swipebox thumb" name="{{ filename }}" href="{{ url_for('frontend.get_image', album=album, filename=filename, size='full') }}" title="{{ filename }}">
+                <a class="swipebox thumb" href="{{ url_for('frontend.get_image', album=album, filename=filename, size='full') }}" title="{{ filename }}">
                     <img src="{{ url_for('frontend.get_image', album=album, filename=filename, size=config.THUMBNAIL_SIZE) }}" alt="{{ filename }}"/>
                 </a>
                 <div style="clear:both;"></div>
