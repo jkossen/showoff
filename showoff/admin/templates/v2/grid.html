@@ -4,6 +4,7 @@
 
 {% block extrahead %}
 <script src="{{ url_for('admin.static_files', filename='jquery.js') }}"></script>
+<script src="{{ url_for('admin.static_files', filename='jquery.blockUI.js') }}"></script>
 <script src="{{ url_for('admin.static_files', filename='showoffadmin.js') }}"></script>
 {% endblock %}
 
@@ -18,24 +19,16 @@
     <ul>
         <li>authentication required:
             <span id="toggle_show">
-                {% if show.get_setting('require_authentication') != 'no' %}
-                <a href="#" onclick="return SHOWOFFADMIN.toggle_bool('#toggle_show', 'require_authentication', 'no')"><span class="glyphicon glyphicon-ok"></span></a>
-                {% else %}
-                <a href="#" onclick="return SHOWOFFADMIN.toggle_bool('#toggle_show', 'require_authentication', 'yes')"><span class="glyphicon glyphicon-remove"></span></a>
-                {% endif %}
+                <a href="#" class="toggle-bool" data-setting="require_authentication" data-value="{{ show.get_setting('require_authentication') }}"></a>
             </span>
         </li>
         <li>show album in reverse order:
             <span id="toggle_reverse">
-                {% if show.get_setting('reverse') == 'yes' %}
-                <a href="#" onclick="return SHOWOFFADMIN.toggle_bool('#toggle_reverse', 'reverse', 'no')"><span class="glyphicon glyphicon-ok"></span></a>
-                {% else %}
-                <a href="#" onclick="return SHOWOFFADMIN.toggle_bool('#toggle_reverse', 'reverse', 'yes')"><span class="glyphicon glyphicon-remove"></span></a>
-                {% endif %}
+                <a href="#" class="toggle-bool" data-setting="reverse" data-value="{{ show.get_setting('reverse') }}"></a>
             </span>
         </li>
 		<li><a href="{{ url_for('admin.show_edit_users', album=album) }}">Edit users</a></li>
-        <li><a href="#" onclick='rotate_all_images(0);return false;'>Rotate all images based on exif info</a></li>
+        <li><a id="rotate-all-images" href="#">Rotate all images based on exif info</a></li>
         <li><a href="{{ url_for('admin.add_all_images_to_show', album=album) }}">Add all images to show</a></li>
         <li><a href="{{ url_for('admin.sort_show_by_exifdate', album=album) }}">Sort show by exifdate</a></li>
         <li><a href="{{ url_for('admin.show_index') }}">Other albums</a><br>
@@ -45,33 +38,17 @@
 <div class="grid-container">
     {% for filename in files %}
     <div class="col-md-4">
-        <a class="grid-item-image" style="width:{{config.GRID_SIZE}}px;height:{{config.GRID_SIZE}}px;" name="{{ filename }}"
+        <a class="grid-item-image" name="{{ filename }}"
            href="{{ url_for('admin.image_page', album=album, filename=filename) }}" title="{{ filename }}">
-            <img src="{{ url_for('admin.show_image', album=album, filename=filename, size=config.GRID_SIZE) }}" alt="{{ filename }}">
+            <img id="img-{{ loop.index }}" src="{{ url_for('admin.show_image', album=album, filename=filename, size=config.GRID_SIZE) }}" alt="{{ filename }}" data-filename="{{ filename }}">
         </a>
         <div id="select-for-show">publish:
-            <span id="toggle-show-{{ loop.index }}">
-                {% if filename in show.data['files'] %}
-                <a  href="#"
-                    onclick='return SHOWOFFADMIN.toggle_show("#toggle-show-{{ loop.index }}",
-                    "{{ url_for('admin.remove_image_from_show', album=album, filename=filename) }}",
-                    "{{ url_for('admin.add_image_to_show', album=album, filename=filename) }}", false);'>
-                    <span class="glyphicon glyphicon-ok"></span>
-                </a>
-                {% else %}
-                <a href="#"
-                   onclick='return SHOWOFFADMIN.toggle_show("#toggle-show-{{ loop.index }}",
-                   "{{ url_for('admin.add_image_to_show', album=album, filename=filename) }}",
-                   "{{ url_for('admin.remove_image_from_show', album=album, filename=filename) }}", true);'>
-                    <span class="glyphicon glyphicon-remove"></span>
-                </a>
-                {% endif %}
-            </span>
+            <a href="#" class="toggle-publish" data-filename="{{ filename }}" data-value="{% if filename in show.data['files'] %}yes{% else %}no{% endif %}"></a>
         </div>
         <div>rotate:
-            <a href="#" onclick='rotate("{{ url_for('admin.image_rotate', album=album, filename=filename, steps=1) }}");return false;'>¼</a> &raquo;
-            <a href="#" onclick='rotate("{{ url_for('admin.image_rotate', album=album, filename=filename, steps=2) }}");return false;'>½</a> &raquo;
-            <a href="#" onclick='rotate("{{ url_for('admin.image_rotate', album=album, filename=filename, steps=3) }}");return false;'>¾</a>
+            <a href="#" class="rotate" data-steps="1" data-index="{{ loop.index }}">¼</a> &raquo;
+            <a href="#" class="rotate" data-steps="2" data-index="{{ loop.index }}">½</a> &raquo;
+            <a href="#" class="rotate" data-steps="3" data-index="{{ loop.index }}">¾</a>
         </div>
     </div>
     {% endfor %}
@@ -84,47 +61,14 @@
 
 <script>
     $(document).ready(function() {
+        var cfg = {
+            'base_url': '{{ url_for('admin.show_index') }}',
+            'album': '{{ album }}'
+        };
 
-    var cfg = {
-    'base_url': '{{ url_for('admin.show_index') }}',
-    'album': '{{ album }}'
-    };
+        var images = [ {% for filename in all_files %}'{{ filename }}'{% if not loop.last %}, {% endif %}{% endfor %} ];
 
-    SHOWOFFADMIN.init(cfg);
-
-    var images = [ {% for filename in all_files %}'{{ filename }}'{% if not loop.last %}, {% endif %}{% endfor %} ];
-    _rotate_all_images = function(index) {
-    percentage_complete = Math.round((index * 100) / images.length);
-    $('#progress').html(percentage_complete + ' % done (' + index + ' of ' + images.length + ': ' + images[index] + ')');
-    $.ajax({
-    url: '{{ url_for('admin.rotate_url', album=album) }}' + images[index] + '/',
-    context: document.body,
-    success: function() {
-    if (index < images.length-1) {
-                _rotate_all_images(index+1);
-                } else {
-                window.location.reload();
-                }
-                }
-                });
-                }
-                rotate_all_images = function(index) {
-                if (confirm('This will rotate all images in the album according to EXIF specs. Are you sure?')) {
-                $.blockUI({ message: '<h1><img src="{{ url_for('admin.static_files', filename='galleriffic/css/loader.gif') }}" style="vertical-align:middle;" /> Rotating all images ...</h1><h2><span id="progress">0 percent complete</span></h2>'});
-                _rotate_all_images(index);
-                }
-                }
-
-                rotate = function(url) {
-                $.blockUI({ message: '<h1><img src="{{ url_for('admin.static_files', filename='galleriffic/css/loader.gif') }}" style="vertical-align:middle;" /> Rotating image ...</h1>'});
-                $.ajax({
-                url: url,
-                context: document.body,
-                success: function() {
-                window.location.reload();
-                }
-                });
-                }
-                });
-                </script>
+        SHOWOFFADMIN.init(cfg, images);
+});
+</script>
 {% endblock %}
