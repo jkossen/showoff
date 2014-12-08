@@ -77,7 +77,7 @@ def get_image(album, filename, size=None):
 @login_required
 def image_page(album, filename, template='image'):
     image = Image(album, filename)
-    show = Show(album)
+    show = Show(album, current_app.config, session)
     exif_manager = ExifManager(image)
     exif_array = exif_manager.get_exif()
 
@@ -90,7 +90,7 @@ def image_page(album, filename, template='image'):
 @login_required
 def list_album(album, page, template='list'):
     if template in current_app.config['FRONTEND_LIST_TEMPLATES']:
-        show = Show(album)
+        show = Show(album, current_app.config, session)
         paginator = get_paginator(album, page, 'frontend.list_album', template)
         return render_themed(template + '.html',
                              album=album,
@@ -105,7 +105,7 @@ def list_album(album, page, template='list'):
 @frontend.route('/fullshow/<album>/<template>.html')
 @login_required
 def show_nonpaginated(album, template='grid_full'):
-    show = Show(album)
+    show = Show(album, current_app.config, session)
 
     if len(show.data['files']) == 0:
         abort(404)
@@ -142,7 +142,7 @@ def show_index():
     shows = {}
 
     for album in full_album_list:
-        show = Show(album)
+        show = Show(album, current_app.config, session)
         if show.is_enabled:
             shows[album] = show
 

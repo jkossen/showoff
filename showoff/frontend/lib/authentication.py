@@ -7,7 +7,7 @@ import os
 def login_required(f):
     @wraps(f)
     def decorated_function(album, *args, **kwargs):
-        show = Show(album)
+        show = Show(album, current_app.config, session)
         if show.need_authentication:
             session['next_url'] = request.url
             return redirect(url_for('.login', album=album))
@@ -16,7 +16,7 @@ def login_required(f):
 
 def authenticate(album):
     """Check user credentials and initialize session"""
-    show = Show(album)
+    show = Show(album, current_app.config, session)
 
     if request.method == 'POST':
         form = LoginForm()

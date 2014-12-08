@@ -1,6 +1,12 @@
-"""Showoff: a webbased image gallery
+# -*- coding: utf-8 -*-
 """
-from flask import current_app, session
+    showoff.lib.show
+    ~~~~~~~~~~~~~~~~
+
+    :copyright: (c) 2010-2014 by Jochem Kossen.
+    :license: BSD, see LICENSE.txt for more details.
+"""
+
 from showoff.lib import hash_password, validate_password
 from showoff.lib import Image
 from showoff.lib import ExifManager
@@ -12,16 +18,20 @@ import json
 
 
 class Show(object):
-    """
-    A Show represents the list of published images from an album
+    """A Show represents the list of published images from an album"""
 
-    Args:
-      album (string): name of the album
-    """
-    def __init__(self, album):
+    def __init__(self, album, config, session):
+        """Constructor
+
+           Args:
+             album (string): name of the album
+        """
+
+        self.config = album
+        self.session = session
         self.album = album
-        self.album_dir = os.path.join(current_app.config['ALBUMS_DIR'], album)
-        self.show_dir = os.path.join(current_app.config['SHOWS_DIR'], album)
+        self.album_dir = os.path.join(config['ALBUMS_DIR'], album)
+        self.show_dir = os.path.join(config['SHOWS_DIR'], album)
         self.show_file = os.path.join(self.show_dir, 'show.json')
         self.data = {'files': [], 'settings': {}, 'users': {}}
         self.valid_settings = [
@@ -30,6 +40,9 @@ class Show(object):
         ]
 
         self.load()
+
+    def __repr__(self):
+        return '<Show for album %s>' % (self.album)
 
     def __iter__(self):
         return iter(self.data['files'])
@@ -52,8 +65,8 @@ class Show(object):
              True if show requires user session, False otherwise
         """
         if self.get_setting('require_authentication') != 'no':
-            if 'username' in session and 'album' in session and \
-                    session['album'] == self.album:
+            if 'username' in self.session and 'album' in self.session and \
+                    self.session['album'] == self.album:
                 return False
             return True
         return False

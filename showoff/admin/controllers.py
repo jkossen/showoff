@@ -32,7 +32,8 @@ IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 """
 
 from flask import Blueprint, current_app, render_template, \
-    send_from_directory, url_for, redirect, jsonify, request
+    send_from_directory, url_for, redirect, jsonify, request, \
+    session
 from showoff.lib import Show, Image, CacheManager, ExifManager
 from showoff.admin.lib import ImageModifier
 from showoff.admin.lib.page import _paginated_overview
@@ -72,7 +73,7 @@ def show_image_full(album, filename):
 
 @admin.route('/<album>/show/<filename>')
 def image_page(album, filename):
-    show = Show(album)
+    show = Show(album, current_app.config, session)
     image = Image(album, filename)
     exif_manager = ExifManager(image)
     exif_array = exif_manager.get_exif()
@@ -91,7 +92,7 @@ def rotate_url():
 @admin.route('/<album>/list/<template>/<int:page>/')
 @admin.route('/<album>/list/<int:page>/')
 def list_album(album, page, template='grid'):
-    show = Show(album)
+    show = Show(album, current_app.config, session)
     ext = re.compile(".(jpg|png|gif|bmp)$", re.IGNORECASE)
 
     album_dir = os.path.join(current_app.config['ALBUMS_DIR'], album)
@@ -143,7 +144,7 @@ def exif_rotate_image(album, filename):
 @admin.route('/<album>/<filename>/toggle_publish/')
 def toggle_publish_image(album, filename):
     """Toggle publish image"""
-    show = Show(album)
+    show = Show(album, current_app.config, session)
     try:
         show.toggle_image(filename).save()
     except:
@@ -154,7 +155,7 @@ def toggle_publish_image(album, filename):
 @admin.route('/<album>/add_image_to_show/<filename>/')
 def add_image_to_show(album, filename):
     """Add an image to the show"""
-    show = Show(album)
+    show = Show(album, current_app.config, session)
     try:
         show.add_image(filename).save()
     except:
@@ -166,7 +167,7 @@ def add_image_to_show(album, filename):
 @admin.route('/<album>/remove_image_from_show/<filename>/')
 def remove_image_from_show(album, filename):
     """Remove an image from the show"""
-    show = Show(album)
+    show = Show(album, current_app.config, session)
 
     try:
         show.remove_image(filename).save()
@@ -178,14 +179,14 @@ def remove_image_from_show(album, filename):
 @admin.route('/<album>/sort_by_exifdate/')
 def sort_show_by_exifdate(album):
     """Sort the show by exif datetime """
-    show = Show(album)
+    show = Show(album, current_app.config, session)
     show.sort_by_exif_datetime().save()
     return goback(True)
 
 
 @admin.route('/<album>/edit_users/')
 def show_edit_users(album):
-    show = Show(album)
+    show = Show(album, current_app.config, session)
     users = show.data['users']
     return render_themed('edit_users.html',
                          album=album,
@@ -195,14 +196,14 @@ def show_edit_users(album):
 
 @admin.route('/<album>/add_all/')
 def add_all_images_to_show(album):
-    show = Show(album)
+    show = Show(album, current_app.config, session)
     show.add_all_images().save()
     return goback(True)
 
 
 @admin.route('/<album>/set/<setting>/<value>/')
 def show_change_setting(album, setting, value):
-    show = Show(album)
+    show = Show(album, current_app.config, session)
     try:
         show.change_setting(setting, value).save()
     except:
@@ -212,7 +213,7 @@ def show_change_setting(album, setting, value):
 @admin.route('/<album>/change_password/', methods=['POST'])
 def show_change_password(album):
     if request.method == 'POST':
-        show = Show(album)
+        show = Show(album, current_app.config, session)
         username = request.form['username']
         password = request.form['password']
         show.set_user(username, current_app.config['SECRET_KEY'], password).save()
@@ -221,7 +222,7 @@ def show_change_password(album):
 
 @admin.route('/<album>/remove_user/<username>/')
 def show_remove_user(album, username):
-    show = Show(album)
+    show = Show(album, current_app.config, session)
     show.remove_user(username).save()
     return jsonify(result='OK')
 

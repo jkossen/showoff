@@ -1,4 +1,4 @@
-from flask import current_app, render_template, abort
+from flask import current_app, render_template, abort, session
 from showoff.lib import Show, Paginator
 import os, re
 
@@ -7,7 +7,7 @@ def render_themed(template, **options):
     return render_template(template_path, **options)
 
 def get_paginator(album, page, endpoint, template):
-    show = Show(album)
+    show = Show(album, current_app.config, session)
 
     if len(show.data['files']) == 0:
         abort(404)
