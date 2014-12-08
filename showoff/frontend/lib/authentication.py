@@ -8,7 +8,7 @@ def login_required(f):
     @wraps(f)
     def decorated_function(album, *args, **kwargs):
         show = Show(album)
-        if show.need_authentication():
+        if show.need_authentication:
             session['next_url'] = request.url
             return redirect(url_for('.login', album=album))
         return f(album, *args, **kwargs)

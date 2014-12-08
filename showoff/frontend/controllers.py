@@ -143,7 +143,7 @@ def show_index():
 
     for album in full_album_list:
         show = Show(album)
-        if show.is_enabled():
+        if show.is_enabled:
             shows[album] = show
 
     album_list = shows.keys()

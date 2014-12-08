@@ -14,7 +14,7 @@
         <img src="{{ url_for('frontend.get_image', album=album, size=400, filename=shows[album].data['files'][0]) }}" />
     </a>
     <div class="media-body">
-        <h4 class="media-heading"><a href="{{ url_for('frontend.show_album', album=album) }}">{{ album }}</a> ({{ shows[album].nr_of_items() }} photos)</h4>
+        <h4 class="media-heading"><a href="{{ url_for('frontend.show_album', album=album) }}">{{ album }}</a> ({{ shows[album].nr_of_items }} photos)</h4>
     </div>
 </div>
 {% endfor %}

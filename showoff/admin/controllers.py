@@ -144,34 +144,42 @@ def exif_rotate_image(album, filename):
 def toggle_publish_image(album, filename):
     """Toggle publish image"""
     show = Show(album)
-    if show.toggle_image(filename):
-        return jsonify(result='OK')
-    return jsonify(result='Failed')
+    try:
+        show.toggle_image(filename).save()
+    except:
+        return jsonify(result='Failed')
 
+    return jsonify(result='OK')
 
 @admin.route('/<album>/add_image_to_show/<filename>/')
 def add_image_to_show(album, filename):
     """Add an image to the show"""
     show = Show(album)
-    if show.add_image(filename):
-        return jsonify(result='OK')
-    return jsonify(result='Failed')
+    try:
+        show.add_image(filename).save()
+    except:
+        return jsonify(result='Failed')
+
+    return jsonify(result='OK')
 
 
 @admin.route('/<album>/remove_image_from_show/<filename>/')
 def remove_image_from_show(album, filename):
     """Remove an image from the show"""
     show = Show(album)
-    if show.remove_image(filename):
-        return jsonify(result='OK')
-    return jsonify(result='Failed')
 
+    try:
+        show.remove_image(filename).save()
+    except:
+        return jsonify(result='Failed')
+
+    return jsonify(result='OK')
 
 @admin.route('/<album>/sort_by_exifdate/')
 def sort_show_by_exifdate(album):
     """Sort the show by exif datetime """
     show = Show(album)
-    show.sort_by_exif_datetime()
+    show.sort_by_exif_datetime().save()
     return goback(True)
 
 
@@ -188,18 +196,18 @@ def show_edit_users(album):
 @admin.route('/<album>/add_all/')
 def add_all_images_to_show(album):
     show = Show(album)
-    show.add_all_images()
+    show.add_all_images().save()
     return goback(True)
 
 
 @admin.route('/<album>/set/<setting>/<value>/')
 def show_change_setting(album, setting, value):
     show = Show(album)
-    if show.change_setting(setting, value) and show.save():
-        return jsonify(result='OK')
-    else:
+    try:
+        show.change_setting(setting, value).save()
+    except:
         return jsonify(result='Failed')
-
+    return jsonify(result='OK')
 
 @admin.route('/<album>/change_password/', methods=['POST'])
 def show_change_password(album):
@@ -207,15 +215,14 @@ def show_change_password(album):
         show = Show(album)
         username = request.form['username']
         password = request.form['password']
-        show.set_user(username, current_app.config['SECRET_KEY'], password)
-        return goback(show.save())
+        show.set_user(username, current_app.config['SECRET_KEY'], password).save()
+        return goback(True)
 
 
 @admin.route('/<album>/remove_user/<username>/')
 def show_remove_user(album, username):
     show = Show(album)
-    show.remove_user(username)
-    show.save()
+    show.remove_user(username).save()
     return jsonify(result='OK')
 
 def goback(is_ok):
