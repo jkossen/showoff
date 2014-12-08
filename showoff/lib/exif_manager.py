@@ -1,4 +1,3 @@
-from flask import current_app
 from PIL import ExifTags, Image
 import os
 
