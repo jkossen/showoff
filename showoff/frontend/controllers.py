@@ -68,15 +68,15 @@ def static_files(filename):
 @frontend.route('/image/<album>/<filename>/<size>/')
 @login_required
 def get_image(album, filename, size=None):
-    image = Image(album, filename)
-    cache = CacheManager(image)
-    return cache.send(size)
+    image = Image(album, filename, current_app.config)
+    cache = CacheManager(image, current_app.config)
+    return send_from_directory(cache.get_dir(size), filename)
 
 
 @frontend.route('/page/<album>/<filename>.html')
 @login_required
 def image_page(album, filename, template='image'):
-    image = Image(album, filename)
+    image = Image(album, filename, current_app.config)
     show = Show(album, current_app.config, session)
     exif_manager = ExifManager(image)
     exif_array = exif_manager.get_exif()

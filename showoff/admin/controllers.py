@@ -61,9 +61,9 @@ def static_files(filename):
 
 @admin.route('/<album>/image/<filename>/<int:size>/')
 def show_image(album, filename, size=None):
-    image = Image(album, filename)
-    cache = CacheManager(image)
-    return cache.send(size)
+    image = Image(album, filename, current_app.config)
+    cache = CacheManager(image, current_app.config)
+    return send_from_directory(cache.get_dir(size), filename)
 
 
 @admin.route('/<album>/image/<filename>/full/')
@@ -74,7 +74,7 @@ def show_image_full(album, filename):
 @admin.route('/<album>/show/<filename>')
 def image_page(album, filename):
     show = Show(album, current_app.config, session)
-    image = Image(album, filename)
+    image = Image(album, filename, current_app.config)
     exif_manager = ExifManager(image)
     exif_array = exif_manager.get_exif()
     if exif_array is None:
@@ -127,7 +127,7 @@ def show_index():
 
 @admin.route('/<album>/<filename>/rotate/<int:steps>/')
 def image_rotate(album, filename, steps=1):
-    image = Image(album, filename)
+    image = Image(album, filename, current_app.config)
     image_modifier = ImageModifier(image)
     image_modifier.rotate(steps)
     return jsonify(result='OK')
@@ -135,7 +135,7 @@ def image_rotate(album, filename, steps=1):
 
 @admin.route('/<album>/rotate_exif/<filename>/')
 def exif_rotate_image(album, filename):
-    image = Image(album, filename)
+    image = Image(album, filename, current_app.config)
     image_modifier = ImageModifier(image)
     image_modifier.rotate_exif()
     return jsonify(result='OK')

@@ -1,15 +1,18 @@
-from flask import current_app, send_from_directory
 from showoff.lib import ExifManager
 from PIL import Image
 import os
 
 
 class CacheManager(object):
-    def __init__(self, image):
+    def __init__(self, image, config):
         self.image = image
+        self.config = config
 
     def get_dir(self, size):
-        return os.path.join(current_app.config['CACHE_DIR'],
+        if size == 'full':
+            return self.image.orig_dir
+        
+        return os.path.join(self.config['CACHE_DIR'],
                             self.image.album,
                             str(size))
 
@@ -23,7 +26,7 @@ class CacheManager(object):
 
     def clear(self, size=None):
         if size is None:
-            for size in current_app.config['ALLOWED_SIZES']:
+            for size in self.config['ALLOWED_SIZES']:
                 self.remove_cached_file(size)
         else:
             self.remove_cached_file(size)
@@ -32,7 +35,7 @@ class CacheManager(object):
         fpath = self.get_path(size)
 
         if not os.path.exists(fpath):
-            adir = os.path.join(current_app.config['CACHE_DIR'],
+            adir = os.path.join(self.config['CACHE_DIR'],
                                 self.image.album)
             if not os.path.exists(adir):
                 os.mkdir(adir)
@@ -48,15 +51,3 @@ class CacheManager(object):
         img = Image.open(self.image.get_fullsize_path())
         img.thumbnail((size, size), Image.ANTIALIAS)
         img.save(self.get_path(size), 'JPEG')
-
-    def send(self, size):
-        if size == 'full':
-            return self.image.send()
-
-        size = int(size)
-        fpath = self.get_path(size)
-
-        if not os.path.exists(fpath):
-            self.update(size)
-
-        return send_from_directory(self.get_dir(size), self.image.filename)

@@ -1,11 +1,11 @@
-from flask import current_app, send_from_directory
 import os
 
 
 class Image(object):
-    def __init__(self, album, filename):
+    def __init__(self, album, filename, config):
         self.album = album
         self.filename = filename
+        self.config = config
 
     @property
     def orig_dir(self):
@@ -32,7 +32,7 @@ class Image(object):
         return os.path.join(self.exif_dir, self.filename + '.exif')
 
     def _get_dir(self, kind):
-        return os.path.join(current_app.config[kind + '_DIR'], self.album)
+        return os.path.join(self.config[kind + '_DIR'], self.album)
 
     def is_edited(self):
         if os.path.exists(self.edit_file):
@@ -51,8 +51,3 @@ class Image(object):
             self.get_edit_or_original_dir(),
             self.filename
         )
-
-    def send(self):
-        return send_from_directory(
-            self.get_edit_or_original_dir(),
-            self.filename)
