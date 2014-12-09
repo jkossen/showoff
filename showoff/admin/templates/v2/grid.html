@@ -31,6 +31,7 @@
         <li><a id="rotate-all-images" href="#">Rotate all images based on exif info</a></li>
         <li><a href="{{ url_for('admin.add_all_images_to_show', album=album) }}">Add all images to show</a></li>
         <li><a href="{{ url_for('admin.sort_show_by_exifdate', album=album) }}">Sort show by exifdate</a></li>
+        <li><a href="{{ url_for('admin.sort_show_by_filename', album=album) }}">Sort show by filename</a></li>
         <li><a href="{{ url_for('admin.show_index') }}">Other albums</a><br>
     </ul>
 </div>

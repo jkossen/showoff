@@ -183,6 +183,12 @@ def sort_show_by_exifdate(album):
     show.sort_by_exif_datetime().save()
     return goback(True)
 
+@admin.route('/<album>/sort_by_filename/')
+def sort_show_by_filename(album):
+    """Sort the show by filename """
+    show = Show(album, current_app.config, session)
+    show.sort_by_filename().save()
+    return goback(True)
 
 @admin.route('/<album>/edit_users/')
 def show_edit_users(album):

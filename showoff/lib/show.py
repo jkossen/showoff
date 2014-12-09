@@ -210,8 +210,18 @@ class Show(object):
 
         return self
 
-    def sort_by_exif_datetime(self):
+    def sort_by_filename(self):
         """Sort the show contents by date retrieved from EXIF data
+
+           Returns:
+             self
+        """
+        self.data['files'].sort()
+
+        return self
+
+    def sort_by_exif_datetime(self):
+        """Sort the show contents by filename
 
            Returns:
              self
