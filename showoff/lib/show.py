@@ -7,7 +7,8 @@
     :license: BSD, see LICENSE.txt for more details.
 """
 
-from showoff.lib import hash_password, validate_password
+from showoff.lib import hash_password
+from showoff.lib import validate_password
 from showoff.lib import Image
 from showoff.lib import ExifManager
 from showoff.lib.exceptions import UnknownFileError
@@ -25,9 +26,10 @@ class Show(object):
 
            Args:
              album (string): name of the album
+             config (dict): configuration dictionary
+             session (dict): http session dictionary
         """
 
-        self.config = album
         self.session = session
         self.album = album
         self.album_dir = os.path.join(config['ALBUMS_DIR'], album)

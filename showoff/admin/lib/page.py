@@ -17,4 +17,7 @@ def _paginated_overview(album, page, endpoint='admin.list', template='grid'):
     if show.get_setting('reverse') == 'yes':
         files.reverse()
 
-    return Paginator(album, files, current_app.config['THUMBNAILS_PER_PAGE'], page, endpoint, template)
+    try:
+        return Paginator(album, files, current_app.config['THUMBNAILS_PER_PAGE'], page, endpoint, template)
+    except:
+        abort(404)

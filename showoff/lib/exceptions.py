@@ -6,3 +6,6 @@ class UnknownFileError(Error):
 
 class UnsupportedSettingError(Error):
     pass
+
+class NoSuchPageError(Error):
+    pass

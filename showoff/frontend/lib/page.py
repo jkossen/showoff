@@ -17,5 +17,7 @@ def get_paginator(album, page, endpoint, template):
     if show.get_setting('reverse') == 'yes':
         files.reverse()
 
-    p = Paginator(album, files, current_app.config['THUMBNAILS_PER_PAGE'], page, endpoint, template)
-    return p
+    try:
+        return Paginator(album, files, current_app.config['THUMBNAILS_PER_PAGE'], page, endpoint, template)
+    except:
+        abort(404)
