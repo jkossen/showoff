@@ -1,3 +1,19 @@
 .paginator {
     float: right;
 }
+
+.glyphicon-ok {
+    color: #00d000;
+}
+
+.glyphicon-remove {
+    color: #d00000;
+}
+
+.grid-item {
+    opacity: .6;
+}
+
+.published {
+    opacity: 1;
+}

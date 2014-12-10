@@ -95,7 +95,14 @@ var SHOWOFFADMIN = SHOWOFFADMIN || {};
 
     var toggle_publish = function(element) {
         var url = file_url(element.data('filename')) + 'toggle_publish';
+        var new_value = (element.data('value') == 'yes') ? 'no' : 'yes';
         toggle(element, url);
+
+        if (new_value == 'no') {
+            element.parent().parent().removeClass('published');
+        } else {
+            element.parent().parent().addClass('published');
+        }
     };
 
     var toggle_bool = function(element) {

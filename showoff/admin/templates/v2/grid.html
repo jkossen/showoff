@@ -38,7 +38,7 @@
 
 <div class="grid-container">
     {% for filename in files %}
-    <div class="col-md-4">
+    <div class="grid-item col-md-4{% if filename in show.data['files'] %} published{% endif %}">
         <a class="grid-item-image"
            href="{{ url_for('admin.image_page', album=album, filename=filename) }}" title="{{ filename }}">
             <img id="img-{{ loop.index }}" src="{{ url_for('admin.show_image', album=album, filename=filename, size=config.GRID_SIZE) }}" alt="{{ filename }}" data-filename="{{ filename }}">
