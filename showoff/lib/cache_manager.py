@@ -1,4 +1,5 @@
 from showoff.lib import ExifManager
+from showoff.lib.exceptions import UnsupportedImageSizeError
 from PIL import Image
 import os
 
@@ -11,13 +12,25 @@ class CacheManager(object):
     def get_dir(self, size):
         if size == 'full':
             return self.image.orig_dir
-        
+
         return os.path.join(self.config['CACHE_DIR'],
                             self.image.album,
                             str(size))
 
     def get_path(self, size):
         return os.path.join(self.get_dir(size), self.image.filename)
+
+    def get(self, size):
+        if size not in self.config['ALLOWED_SIZES']:
+            raise UnsupportedImageSizeError
+
+        if size == 'full':
+            return (self.image.orig_dir, self.image.filename)
+
+        if not os.path.exists(self.get_path(size)):
+            self.update(size)
+
+        return (self.get_dir(size), self.image.filename)
 
     def remove_cached_file(self, size):
         fpath = self.get_path(size)
@@ -49,5 +62,5 @@ class CacheManager(object):
             exif.update()
 
         img = Image.open(self.image.get_fullsize_path())
-        img.thumbnail((size, size), Image.ANTIALIAS)
+        img.thumbnail((int(size), int(size)), Image.ANTIALIAS)
         img.save(self.get_path(size), 'JPEG')

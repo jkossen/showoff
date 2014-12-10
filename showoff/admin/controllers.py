@@ -63,7 +63,7 @@ def static_files(filename):
 def show_image(album, filename, size=None):
     image = Image(album, filename, current_app.config)
     cache = CacheManager(image, current_app.config)
-    return send_from_directory(cache.get_dir(size), filename)
+    return send_from_directory(*cache.get(size))
 
 
 @admin.route('/<album>/image/<filename>/full/')

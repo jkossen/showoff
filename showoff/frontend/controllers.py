@@ -67,10 +67,10 @@ def static_files(filename):
 
 @frontend.route('/image/<album>/<filename>/<size>/')
 @login_required
-def get_image(album, filename, size=None):
+def get_image(album, filename, size="full"):
     image = Image(album, filename, current_app.config)
     cache = CacheManager(image, current_app.config)
-    return send_from_directory(cache.get_dir(size), filename)
+    return send_from_directory(*cache.get(size))
 
 
 @frontend.route('/page/<album>/<filename>.html')
