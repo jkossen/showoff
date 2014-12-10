@@ -9,3 +9,6 @@ class UnsupportedSettingError(Error):
 
 class NoSuchPageError(Error):
     pass
+
+class UnsupportedImageSizeError(Error):
+    pass
