@@ -104,7 +104,7 @@ class ExifManager(object):
 
     def update(self):
         if not os.path.exists(self.image.exif_dir):
-            os.mkdir(self.image.exifdir)
+            os.mkdir(self.image.exif_dir)
         img = Image.open(self.image.orig_file)
         if not hasattr(img, '_getexif'):
             return None
