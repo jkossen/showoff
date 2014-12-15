@@ -148,7 +148,7 @@ class Show(object):
              setting (string): name of setting
 
            Returns:
-             value of setting
+             value of setting or None if it's not set
 
            Raises:
              UnsupportedSettingError if setting is not supported
@@ -156,7 +156,10 @@ class Show(object):
         if setting in self.data['settings']:
             return self.data['settings'][setting]
         else:
-            raise UnsupportedSettingError
+            if setting in self.valid_settings:
+                return None
+            else:
+                raise UnsupportedSettingError
 
     def load(self):
         """Load the show data
