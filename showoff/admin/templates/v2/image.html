@@ -43,7 +43,7 @@ rotate clockwise:
 
 <script type="text/javascript">
 rotate = function(url) {
-    $.blockUI({ message: '<h1><img src="{{ url_for('admin.static_files', filename='galleriffic/css/loader.gif') }}" style="vertical-align:middle;" /> Rotating image ...</h1>'});
+    $.blockUI({ message: '<h1>Rotating image ...</h1>'});
     $.ajax({
         url: url,
         context: document.body,
