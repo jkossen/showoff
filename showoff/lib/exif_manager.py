@@ -1,3 +1,12 @@
+# -*- coding: utf-8 -*-
+"""
+    showoff.lib.exif_manager
+    ~~~~~~~~~~~~~~~~~~~~~~~~~
+
+    :copyright: (c) 2010-2014 by Jochem Kossen.
+    :license: BSD, see LICENSE.txt for more details.
+"""
+
 from PIL import ExifTags, Image
 import os
 
@@ -5,6 +14,7 @@ import os
 class ExifManager(object):
     def __init__(self, image):
         self.image = image
+
         self.supported_exiftags = [
             "ImageWidth",
             "ImageLength",
@@ -106,6 +116,7 @@ class ExifManager(object):
         if not os.path.exists(self.image.exif_dir):
             os.mkdir(self.image.exif_dir)
         img = Image.open(self.image.orig_file)
+
         if not hasattr(img, '_getexif'):
             return None
         exif = img._getexif()
@@ -128,7 +139,7 @@ class ExifManager(object):
                     f.write("%s|%s\n" % (key, ret[key]))
         return ret
 
-    def get_exif(self):
+    def get(self):
         exif = {}
 
         if os.path.exists(self.image.exif_file):
@@ -138,7 +149,7 @@ class ExifManager(object):
                     if len(line_arr) > 1:
                         exif[line_arr[0]] = line_arr[1]
         else:
-            exif = self.update_exif()
+            exif = self.update()
 
         return exif
 
