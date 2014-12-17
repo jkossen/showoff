@@ -48,6 +48,11 @@ def render_themed(template, **options):
     template_path = os.path.join(current_app.config['ADMIN_THEME'], template)
     return render_template(template_path, **options)
 
+def get_image_cache(album, filename):
+    image = Image(album, filename, current_app.config)
+    cache = CacheManager(image, current_app.config)
+
+    return image, cache
 
 @admin.route('/static_files/<path:filename>')
 def static_files(filename):
@@ -61,8 +66,7 @@ def static_files(filename):
 
 @admin.route('/<album>/image/<filename>/<int:size>/')
 def show_image(album, filename, size=None):
-    image = Image(album, filename, current_app.config)
-    cache = CacheManager(image, current_app.config)
+    image, cache = get_image_cache(album, filename)
     return send_from_directory(*cache.get(size))
 
 
@@ -76,7 +80,7 @@ def image_page(album, filename):
     show = Show(album, current_app.config, session)
     image = Image(album, filename, current_app.config)
     exif_manager = ExifManager(image)
-    exif_array = exif_manager.get_exif()
+    exif_array = exif_manager.get()
     if exif_array is None:
         exif_array = {}
     return render_themed('image.html', album=album, filename=filename,
