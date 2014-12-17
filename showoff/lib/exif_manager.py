@@ -138,7 +138,7 @@ class ExifManager(object):
                     if len(line_arr) > 1:
                         exif[line_arr[0]] = line_arr[1]
         else:
-            exif = self.update_exif()
+            exif = self.update()
 
         return exif
 
