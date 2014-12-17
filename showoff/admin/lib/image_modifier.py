@@ -22,7 +22,7 @@ class ImageModifier(object):
 
         img.save(self.image.edit_file, "JPEG")
 
-        self.cache.clear()
+        self.cache.delete()
 
     def rotate_exif(self):
         orientation_steps = {3: 2, 6: 1, 8: 3}
