@@ -7,9 +7,12 @@ class Image(object):
         self.filename = filename
         self.config = config
 
+    def _get_folder(self, kind):
+        return os.path.join(self.config[kind + '_DIR'], self.album)
+
     @property
     def orig_dir(self):
-        return self._get_dir('ALBUMS')
+        return self._get_folder('ALBUMS')
 
     @property
     def orig_file(self):
@@ -17,7 +20,7 @@ class Image(object):
 
     @property
     def edit_dir(self):
-        return self._get_dir('EDITS')
+        return self._get_folder('EDITS')
 
     @property
     def edit_file(self):
@@ -25,14 +28,11 @@ class Image(object):
 
     @property
     def exif_dir(self):
-        return os.path.join(self._get_dir('CACHE'), 'exif')
+        return os.path.join(self._get_folder('CACHE'), 'exif')
 
     @property
     def exif_file(self):
         return os.path.join(self.exif_dir, self.filename + '.exif')
-
-    def _get_dir(self, kind):
-        return os.path.join(self.config[kind + '_DIR'], self.album)
 
     def is_edited(self):
         if os.path.exists(self.edit_file):
