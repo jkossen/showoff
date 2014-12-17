@@ -1,3 +1,12 @@
+# -*- coding: utf-8 -*-
+"""
+    showoff.lib.cache_manager
+    ~~~~~~~~~~~~~~~~~~~~~~~~~
+
+    :copyright: (c) 2010-2014 by Jochem Kossen.
+    :license: BSD, see LICENSE.txt for more details.
+"""
+
 from showoff.lib import ExifManager
 from showoff.lib.exceptions import UnsupportedImageSizeError
 from PIL import Image
@@ -5,11 +14,27 @@ import os
 
 
 class CacheManager(object):
+    """Handle caching for a given image"""
+
     def __init__(self, image, config):
+        """Constructor
+
+           Args:
+             image (image): showoff image object
+             config (dict): configuration dictionary
+        """
         self.image = image
         self.config = config
 
-    def get_dir(self, size):
+    def _get_folderpath(self, size):
+        """Get folder path of given size (without filename)
+
+           Args:
+             size (int): size of image in pixels
+
+           Returns:
+              string containing folder path
+        """
         if size == 'full':
             return self.image.orig_dir
 
@@ -17,35 +42,56 @@ class CacheManager(object):
                             self.image.album,
                             str(size))
 
-    def get_path(self, size):
-        return os.path.join(self.get_dir(size), self.image.filename)
+    def _get_filepath(self, size):
+        """Get full path to cached file of given size
+
+           Args:
+             size (int): size of image in pixels
+
+           Returns:
+              string containing full image path
+        """
+        return os.path.join(self._get_folderpath(size), self.image.filename)
 
     def get(self, size):
+        """Get tuple with folder and filename for given size
+
+           Args:
+             size (int): size of image in pixels
+
+           Raises:
+             UnsupportedImageSizeError if size is not in ALLOWED_SIZES
+
+           Returns:
+             folder, filename
+        """
         if size not in self.config['ALLOWED_SIZES']:
             raise UnsupportedImageSizeError
 
         if size == 'full':
-            return (self.image.orig_dir, self.image.filename)
+            return self.image.orig_dir, self.image.filename
 
-        if not os.path.exists(self.get_path(size)):
-            self.update(size)
+        if not os.path.exists(self._get_filepath(size)):
+            self.create(size)
 
-        return (self.get_dir(size), self.image.filename)
+        return self._get_folderpath(size), self.image.filename
 
-    def remove_cached_file(self, size):
-        fpath = self.get_path(size)
-        if os.path.exists(fpath):
-            os.unlink(fpath)
+    def create(self, size):
+        """Generate new cache files for given size
 
-    def clear(self, size=None):
-        if size is None:
-            for size in self.config['ALLOWED_SIZES']:
-                self.remove_cached_file(size)
-        else:
-            self.remove_cached_file(size)
+           Args:
+             size (int): size of image in pixels
 
-    def update(self, size):
-        fpath = self.get_path(size)
+           Raises:
+             UnsupportedImageSizeError if size is not in ALLOWED_SIZES
+
+           Returns:
+             self
+        """
+        if size not in self.config['ALLOWED_SIZES']:
+            raise UnsupportedImageSizeError
+
+        fpath = self._get_filepath(size)
 
         if not os.path.exists(fpath):
             adir = os.path.join(self.config['CACHE_DIR'],
@@ -57,10 +103,29 @@ class CacheManager(object):
             if not os.path.exists(tdir):
                 os.mkdir(tdir)
 
-        if not os.path.exists(self.image.exif_file):
-            exif = ExifManager(self.image)
-            exif.update()
-
         img = Image.open(self.image.get_fullsize_path())
         img.thumbnail((int(size), int(size)), Image.ANTIALIAS)
-        img.save(self.get_path(size), 'JPEG')
+        img.save(fpath, 'JPEG')
+
+        self.event_manager.trigger("CACHE_REFRESH")
+
+        return self
+
+    def delete(self, size=None):
+        """Remove cached files for given size, or all if size is None
+
+           Args:
+             size (int): size of image in pixels
+        """
+        if size == 'full':
+            return self
+
+        if size is None:
+            for size in self.config['ALLOWED_SIZES']:
+                self.delete(size)
+        else:
+            fpath = self._get_filepath(size)
+            if os.path.exists(fpath):
+                os.unlink(fpath)
+
+        return self
