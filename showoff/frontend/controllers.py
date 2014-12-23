@@ -65,7 +65,8 @@ def static_files(filename):
     return send_from_directory(static_path, filename)
 
 
-@frontend.route('/image/<album>/<filename>/<size>/')
+@frontend.route('/image/<album>/<filename>/full/', defaults={'size': 'full'})
+@frontend.route('/image/<album>/<filename>/<int:size>/')
 @login_required
 def get_image(album, filename, size="full"):
     image = Image(album, filename, current_app.config)
