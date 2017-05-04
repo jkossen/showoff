@@ -1,14 +1,16 @@
+from os import environ as env
+
 DEBUG = True
-TITLE = 'Photo albums'
-FRONTEND_HOST = '127.0.0.1'
+TITLE = env.get('GALLERY_TITLE') 
+FRONTEND_HOST = '0.0.0.0'
 FRONTEND_PORT = 5050
-FRONTEND_BASEURL = 'http://showoff'
-FRONTEND_PREFIX = '/showoff'
+FRONTEND_BASEURL = 'http://photo'
+FRONTEND_PREFIX = '/gallery'
 FRONTEND_FCGI_SOCKET = '/var/lib/showoff/frontend.sock'
-ADMIN_HOST = '127.0.0.1'
+ADMIN_HOST = '0.0.0.0'
 ADMIN_PORT = 5051
-ADMIN_BASEURL = 'http://showoff'
-ADMIN_PREFIX = '/showoff_admin'
+ADMIN_BASEURL = 'http://photo'
+ADMIN_PREFIX = '/admin'
 ADMIN_FCGI_SOCKET = '/var/lib/showoff/admin.sock'
 THUMBNAIL_SIZE = 400
 GRID_SIZE = 200
@@ -25,7 +27,7 @@ ADMIN_THEME = 'v2'
 CACHE_DIR = '/var/lib/showoff/cache'
 EDITS_DIR = '/var/lib/showoff/edits'
 SHOWS_DIR = '/var/lib/showoff/shows'
-SECRET_KEY = 'CHANGE_THIS'
-ALBUMS_DIR = '/var/lib/showoff/photos'
+ALBUMS_DIR = env.get('ALBUMS_DIR')
+SECRET_KEY = env.get('SECRET_KEY')
 FRONTEND_LIST_TEMPLATES = ['list', 'list_small', 'grid', 'galleria']
 
