@@ -1,7 +1,16 @@
-FROM alpine:latest
-RUN apk update
-RUN apk add bash git python py-pip python-dev \
-    build-base jpeg-dev zlib-dev musl-dev libjpeg openjpeg
+FROM python:2.7-slim
+
+RUN DEBIAN_FRONTEND=noninteractive \
+    apt-get update \
+    && apt-get -yq install \
+    build-essential \
+    git-core \
+    libffi-dev \
+    libyaml-dev \
+    libjpeg-dev \
+    zlib1g-dev \ 
+    libssl-dev \
+    python-setuptools
 ENV LIBRARY_PATH=/lib:/usr/lib
 ENV SECRET_KEY=AJI2RhfhJGcg1Jb9zXLyEYqdQvjx3QBU2GJ7pyYRMsLAfI7M2d8rNpY 
 ENV GALLERY_TITLE="photo gallery"
